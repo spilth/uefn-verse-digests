@@ -2,7 +2,7 @@
 #################################################
 # Generated Digest of Verse API
 # DO NOT modify this manually!
-# Generated from build: ++Fortnite+Release-24.20-CL-24939793
+# Generated from build: ++Fortnite+Release-24.20-CL-25058254
 #################################################
 
 using {/Verse.org/Colors}
@@ -1822,6 +1822,9 @@ Devices<public> := module:
     # Used in conjunction with `advanced_storm_controller_device` to customize individual storm phases.
     advanced_storm_beacon_device<public> := class<concrete><final>(creative_device_base):
 
+    # Spawns a lightweight vehicle made for defying gravity with its rocket boosting, jumping, and aerial maneuverability capabilities.
+    vehicle_spawner_octane_device<public> := class<concrete><final>(vehicle_spawner_device):
+
     # Used to spawn an `agent` on an island. Use multiple `player_spawner_device`s to spawn multiple `agent`s.
     player_spawner_device<public> := class<concrete><final>(creative_device_base):
         # Signaled when an `agent` is spawned from this device.
@@ -1872,9 +1875,6 @@ Devices<public> := module:
 
         # Clears the state of this device.
         Clear<public>():void = external {}
-
-    # Spawns a lightweight vehicle made for defying gravity with its rocket boosting, jumping, and aerial maneuverability capabilities.
-    vehicle_spawner_octane_device<public> := class<concrete><final>(vehicle_spawner_device):
 
     # Used to select, spawn, and configure a skeletal mesh to play a specific animation.
     animated_mesh_device<public> := class<concrete><final>(creative_device_base):
@@ -1943,74 +1943,6 @@ Devices<public> := module:
         # Show the *Class Selector UI* to `Agent`.
         Show<public>(Agent:agent):void = external {}
 
-    # Spawns a crowd to cheer you on.
-    crowd_volume_device<public> := class<concrete><final>(creative_device_base):
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-    # Used to spawn guards that can patrol and attack other `agent`s.
-    guard_spawner_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when a guard is spawned.
-        # Sends the `agent` guard who was spawned.
-        SpawnedEvent<public>:listenable(agent) = external {}
-
-        # Enables this device. Guards will start to spawn.
-        Enable<public>():void = external {}
-
-        # Disables this device. Guards will despawn if *Despawn Guards When Disabled* is set.
-        Disable<public>():void = external {}
-
-        # Resets the spawn count allowing spawning of a new batch of guards.
-        Reset<public>():void = external {}
-
-        # Tries to spawn a guard. If *Auto Hire When Spawned* is set to *Triggering Player* the guard will be
-        # hired by `Instigator`.
-        Spawn<public>(Instigator:agent):void = external {}
-
-        # Despawns guards. `Instigator` will be considered as the eliminator of those guards.
-        Despawn<public>(Instigator:agent):void = external {}
-
-        # Hires guards to `Instigator`'s team.
-        Hire<public>(Instigator:agent):void = external {}
-
-        # Dismisses all hired guards.
-        DismissAllHiredGuards<public>():void = external {}
-
-        # Dismisses all hired guards that were recruited by `Instigator`.
-        DismissAgentHiredGuards<public>(Instigator:agent):void = external {}
-
-        # Forces guard to attack `Target`, bypassing perception checks.
-        ForceAttackTarget<public>(Target:agent):void = external {}
-
-        # Allows guards to be hired.
-        SetGuardsHireable<public>():void = external {}
-
-        # Prevents guards from being hired.
-        SetGuardsNotHireable<public>():void = external {}
-
-    # Used to set up islands so players will earn Battle Pass XP when they interact with your island. Accolades
-    # are achievements or accomplishments that players can complete to earn XP.
-    accolades_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when testing the accolade to make sure it is awarded as expected. Only signals within
-        # unpublished island environments.
-        # Sends the `agent` receiving the achievement.
-        TestAwardEvent<public>:listenable(agent) = external {}
-
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-        # Awards the XP to `agent`.
-        Award<public>(Agent:agent):void = external {}
-
-    # Specialized `vehicle_spawner_device` that allows a helicopter to be configured and spawned.
-    vehicle_spawner_helicopter_device<public> := class<concrete><final>(vehicle_spawner_device):
-
     # Used to place a campfire in the world that an `agent` can use to heal themselves.
     campfire_device<public> := class<concrete><final>(creative_device_base):
         # Signaled when an `agent` enters the area of effect for this device.
@@ -2057,6 +1989,74 @@ Devices<public> := module:
         # Extinguishes this device.
         Extinguish<public>(Agent:agent):void = external {}
 
+    # Spawns a crowd to cheer you on.
+    crowd_volume_device<public> := class<concrete><final>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+    # Used to set up islands so players will earn Battle Pass XP when they interact with your island. Accolades
+    # are achievements or accomplishments that players can complete to earn XP.
+    accolades_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when testing the accolade to make sure it is awarded as expected. Only signals within
+        # unpublished island environments.
+        # Sends the `agent` receiving the achievement.
+        TestAwardEvent<public>:listenable(agent) = external {}
+
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+        # Awards the XP to `agent`.
+        Award<public>(Agent:agent):void = external {}
+
+    # Used to spawn guards that can patrol and attack other `agent`s.
+    guard_spawner_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when a guard is spawned.
+        # Sends the `agent` guard who was spawned.
+        SpawnedEvent<public>:listenable(agent) = external {}
+
+        # Enables this device. Guards will start to spawn.
+        Enable<public>():void = external {}
+
+        # Disables this device. Guards will despawn if *Despawn Guards When Disabled* is set.
+        Disable<public>():void = external {}
+
+        # Resets the spawn count allowing spawning of a new batch of guards.
+        Reset<public>():void = external {}
+
+        # Tries to spawn a guard. If *Auto Hire When Spawned* is set to *Triggering Player* the guard will be
+        # hired by `Instigator`.
+        Spawn<public>(Instigator:agent):void = external {}
+
+        # Despawns guards. `Instigator` will be considered as the eliminator of those guards.
+        Despawn<public>(Instigator:agent):void = external {}
+
+        # Hires guards to `Instigator`'s team.
+        Hire<public>(Instigator:agent):void = external {}
+
+        # Dismisses all hired guards.
+        DismissAllHiredGuards<public>():void = external {}
+
+        # Dismisses all hired guards that were recruited by `Instigator`.
+        DismissAgentHiredGuards<public>(Instigator:agent):void = external {}
+
+        # Forces guard to attack `Target`, bypassing perception checks.
+        ForceAttackTarget<public>(Target:agent):void = external {}
+
+        # Allows guards to be hired.
+        SetGuardsHireable<public>():void = external {}
+
+        # Prevents guards from being hired.
+        SetGuardsNotHireable<public>():void = external {}
+
+    # Specialized `vehicle_spawner_device` that allows a helicopter to be configured and spawned.
+    vehicle_spawner_helicopter_device<public> := class<concrete><final>(vehicle_spawner_device):
+
     # Used to cause `agent`s to drop or lose items from their inventory. For example, if an `agent` is *Down But Not Out*,
     # they could drop items from their inventory, and other `agent`s could then pick up those items.
     item_remover_device<public> := class<concrete><final>(creative_device_base):
@@ -2072,49 +2072,8 @@ Devices<public> := module:
     # Specialized `vehicle_spawner_device` that allows an anti-vehicle turret to be configured and spawned.
     vehicle_spawner_heavy_turret_device<public> := class<concrete><final>(vehicle_spawner_device):
 
-    # Used to configure a single interactive mannequin, that can visualize characters, clothing, and perform emotes.
-    character_device<public> := class<concrete>(creative_device_base):
-        # Signaled when an `agent` interacts with this device.
-        # Sends the `agent` that interacted with this device.
-        InteractedWithEvent<public>:listenable(agent) = external {}
-
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-        # Shows this device.
-        Show<public>():void = external {}
-
-        # Hides this device.
-        Hide<public>():void = external {}
-
-        # Plays an emote on the character created by this device.
-        PlayEmote<public>():void = external {}
-
     # Specialized `vehicle_spawner_device` that allows a UFO to be configured and spawned.
     vehicle_spawner_ufo_device<public> := class<concrete><final>(vehicle_spawner_device):
-
-    # Used to set an `agent`'s spawn point when activated. This can also clear the `agent`'s inventory.
-    player_checkpoint_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when this device is first activated by any `agent`.
-        # Sends the `agent` that activated this device.
-        FirstActivationEvent<public>:listenable(agent) = external {}
-
-        # Signaled each time a new `agent` activates this device.
-        # Sends the `agent` that activated this device.
-        FirstActivationPerAgentEvent<public>:listenable(agent) = external {}
-
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-        # Registers this checkpoint for `Agent`. This sets the respawn point and can clear `Agent`'s inventory
-        # depending on this device's settings. Multiple `agent`s can be registered to this device at one time.
-        Register<public>(Agent:agent):void = external {}
 
     # Used to create HUD text boxes that give players information, and allows responses to be customized to player choices.
     popup_dialog_device<public> := class<concrete><final>(creative_device_base):
@@ -2178,6 +2137,50 @@ Devices<public> := module:
         # Returns the *Title* text for this popup.
         GetTitleText<public>()<transacts>:[]char = external {}
 
+    # Specialized `vehicle_spawner_device` that allows a siege cannon to be configured and spawned.
+    vehicle_spawner_siege_cannon_device<public> := class<concrete><final>(vehicle_spawner_device):
+
+    # Used to configure a single interactive mannequin, that can visualize characters, clothing, and perform emotes.
+    character_device<public> := class<concrete>(creative_device_base):
+        # Signaled when an `agent` interacts with this device.
+        # Sends the `agent` that interacted with this device.
+        InteractedWithEvent<public>:listenable(agent) = external {}
+
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+        # Shows this device.
+        Show<public>():void = external {}
+
+        # Hides this device.
+        Hide<public>():void = external {}
+
+        # Plays an emote on the character created by this device.
+        PlayEmote<public>():void = external {}
+
+    # Used to set an `agent`'s spawn point when activated. This can also clear the `agent`'s inventory.
+    player_checkpoint_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when this device is first activated by any `agent`.
+        # Sends the `agent` that activated this device.
+        FirstActivationEvent<public>:listenable(agent) = external {}
+
+        # Signaled each time a new `agent` activates this device.
+        # Sends the `agent` that activated this device.
+        FirstActivationPerAgentEvent<public>:listenable(agent) = external {}
+
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+        # Registers this checkpoint for `Agent`. This sets the respawn point and can clear `Agent`'s inventory
+        # depending on this device's settings. Multiple `agent`s can be registered to this device at one time.
+        Register<public>(Agent:agent):void = external {}
+
     # Physics tree that can be chopped down, and damage players, vehicles, creatures, and structures.
     physics_tree_device<public> := class<concrete><final>(physics_object_base_device):
         # Signaled when a tree is spawned.
@@ -2226,9 +2229,6 @@ Devices<public> := module:
 
         # Destroys the current rolling boulder.
         DestroyRollingBoulder<public>():void = external {}
-
-    # Specialized `vehicle_spawner_device` that allows a siege cannon to be configured and spawned.
-    vehicle_spawner_siege_cannon_device<public> := class<concrete><final>(vehicle_spawner_device):
 
     # Used to mark an `agent`'s position on the minimap and configure the information shown for marked `agent`s.
     # 
@@ -2356,9 +2356,6 @@ Devices<public> := module:
         # Disables this device.
         Disable<public>():void = external {}
 
-    # Specialized `vehicle_spawner_device` that allows a tank to be configured and spawned.
-    vehicle_spawner_tank_device<public> := class<concrete><final>(vehicle_spawner_device):
-
     # Specialized `vehicle_spawner_device` that allows a Whiplash sports car to be configured and spawned.
     vehicle_spawner_sports_car_device<public> := class<concrete><final>(vehicle_spawner_device):
 
@@ -2437,6 +2434,109 @@ Devices<public> := module:
 
     # Specialized `vehicle_spawner_device` that allows an ATK (all terrain kart) to be configured and spawned.
     vehicle_spawner_atk_device<public> := class<concrete><final>(vehicle_spawner_device):
+
+    # Specialized `vehicle_spawner_device` that allows a tank to be configured and spawned.
+    vehicle_spawner_tank_device<public> := class<concrete><final>(vehicle_spawner_device):
+
+    # Used to create a zone where players are put into a skydive state. Can customize the amount of force used to
+    # push the player, and how fast players are launched into the air. The direction of the push is in relation to
+    # the device, so you can rotate and overlap several devices, then use variable speeds to create pneumatic tubes
+    # that propel players in different directions. You can even create unique traversal (traveling) options, where
+    # players can use these zones to reach places on your island they couldn't reach any other way.
+    skydive_volume_device<public> := class<concrete><final>(effect_volume_device):
+        # Signaled when an `agent` enters the volume.
+        # Sends the `agent` that entered the volume.
+        AgentEntersEvent<public>:listenable(agent) = external {}
+
+        # Signaled when an `agent` exits the volume.
+        # Sends the `agent` that exited the volume.
+        AgentExitsEvent<public>:listenable(agent) = external {}
+
+        # Signaled when the zone changes from empty to occupied.
+        # Sends the `agent` that entered the volume.
+        ZoneOccupiedEvent<public>:listenable(agent) = external {}
+
+        # Signaled when the zone changes from occupied to empty.
+        # Sends the `agent` that last left the volume.
+        ZoneEmptiedEvent<public>:listenable(agent) = external {}
+
+        # Enables volume locking which prevents users from leaving the volume once they've entered.
+        EnableVolumeLocking<public>():void = external {}
+
+        # Disables volume locking which prevents users from leaving the volume once they've entered.
+        DisableVolumeLocking<public>():void = external {}
+
+    # Used to specify a zone where custom gameplay effects can be applied (e.g. gravity, no build, no weapons).
+    mutator_zone_device<public> := class<concrete><final>(effect_volume_device):
+        # Signaled when an `agent` in this zone begins emoting. This will not signal if the `agent` is on the
+        # *Safe Team* or if *Affects Players* is disabled.
+        # Sends the `agent` that started emoting.
+        AgentBeginsEmotingEvent<public>:listenable(agent) = external {}
+
+        # Signaled when an `agent` in this zone ends emoting. This will not signal if the `agent` is on the
+        # *Safe Team* or if *Affects Players* is disabled.
+        # Sends the `agent` that stopped emoting.
+        AgentEndsEmotingEvent<public>:listenable(agent) = external {}
+
+        # Signaled when an `agent` enters this zone.
+        # Sends the `agent` entering this zone.
+        AgentEntersEvent<public>:listenable(agent) = external {}
+
+        # Signaled when an `agent` exits this zone.
+        # Sends the `agent` exiting this zone.
+        AgentExitsEvent<public>:listenable(agent) = external {}
+
+        # Updates *Selected Class* to `Agent`'s class.
+        UpdateSelectedClass<public>(Agent:agent):void = external {}
+
+        # Updates *Selected Team* to `Agent`'s team.
+        UpdateSelectedTeam<public>(Agent:agent):void = external {}
+
+    # Used to specify an area which allows (or prevents) various objects, terrain, or buildings from being set on fire.
+    fire_volume_device<public> := class<concrete><final>(effect_volume_device):
+        # Extinguishes objects inside this device area.
+        Extinguish<public>():void = external {}
+
+        # Ignites objects inside this device area.
+        Ignite<public>():void = external {}
+
+    # Base class for types of volumes with special gameplay properties.
+    effect_volume_device<public> := class<abstract><epic_internal>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+    # Used to specify an area volume which can damage `agent`s, vehicles, and creatures.
+    damage_volume_device<public> := class<concrete><final>(effect_volume_device):
+        # Signaled when an `agent` enters the volume.
+        # Sends the `agent` entering the volume.
+        AgentEntersEvent<public>:listenable(agent) = external {}
+
+        # Signaled when an `agent` exits the volume.
+        # Sends the `agent` exiting the volume.
+        AgentExitsEvent<public>:listenable(agent) = external {}
+
+        # Updates *Selected Class* to `Agent`'s class.
+        UpdateSelectedClass<public>(Agent:agent):void = external {}
+
+        # Updates *Selected Team* to `Agent`'s team.
+        UpdateSelectedTeam<public>(Agent:agent):void = external {}
+
+        # Sets the damage to be applied each tick within the volume. `Damage` is clamped between `1` and `500`.
+        SetDamage<public>(Damage:int):void = external {}
+
+        # Returns the damage to be applied each tick within the volume.
+        GetDamage<public>()<transacts>:int = external {}
+
+    # Creates an impenetrable zone that can block `agent` movement and weapon fire.
+    barrier_device<public> := class<concrete><final>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
 
     # Used to spawn various wildlife that players can herd, hunt, or tame.
     wildlife_spawner_device<public> := class<concrete><final>(creative_device_base):
@@ -2570,100 +2670,12 @@ Devices<public> := module:
         # switch it off. Clamped to 150 characters.
         SetTurnOffInteractionText<public>(Text:message):void = external {}
 
-    # Used to create a zone where players are put into a skydive state. Can customize the amount of force used to
-    # push the player, and how fast players are launched into the air. The direction of the push is in relation to
-    # the device, so you can rotate and overlap several devices, then use variable speeds to create pneumatic tubes
-    # that propel players in different directions. You can even create unique traversal (traveling) options, where
-    # players can use these zones to reach places on your island they couldn't reach any other way.
-    skydive_volume_device<public> := class<concrete><final>(effect_volume_device):
-        # Signaled when an `agent` enters the volume.
-        # Sends the `agent` that entered the volume.
-        AgentEntersEvent<public>:listenable(agent) = external {}
+    # Used to place a crash pad that can bounce players and protect them from fall damage.
+    crash_pad_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when an `agent` is launched by this device.
+        # Sends the launched `agent`.
+        LaunchedEvent<public>:listenable(agent) = external {}
 
-        # Signaled when an `agent` exits the volume.
-        # Sends the `agent` that exited the volume.
-        AgentExitsEvent<public>:listenable(agent) = external {}
-
-        # Signaled when the zone changes from empty to occupied.
-        # Sends the `agent` that entered the volume.
-        ZoneOccupiedEvent<public>:listenable(agent) = external {}
-
-        # Signaled when the zone changes from occupied to empty.
-        # Sends the `agent` that last left the volume.
-        ZoneEmptiedEvent<public>:listenable(agent) = external {}
-
-        # Enables volume locking which prevents users from leaving the volume once they've entered.
-        EnableVolumeLocking<public>():void = external {}
-
-        # Disables volume locking which prevents users from leaving the volume once they've entered.
-        DisableVolumeLocking<public>():void = external {}
-
-    # Used to specify a zone where custom gameplay effects can be applied (e.g. gravity, no build, no weapons).
-    mutator_zone_device<public> := class<concrete><final>(effect_volume_device):
-        # Signaled when an `agent` in this zone begins emoting. This will not signal if the `agent` is on the
-        # *Safe Team* or if *Affects Players* is disabled.
-        # Sends the `agent` that started emoting.
-        AgentBeginsEmotingEvent<public>:listenable(agent) = external {}
-
-        # Signaled when an `agent` in this zone ends emoting. This will not signal if the `agent` is on the
-        # *Safe Team* or if *Affects Players* is disabled.
-        # Sends the `agent` that stopped emoting.
-        AgentEndsEmotingEvent<public>:listenable(agent) = external {}
-
-        # Signaled when an `agent` enters this zone.
-        # Sends the `agent` entering this zone.
-        AgentEntersEvent<public>:listenable(agent) = external {}
-
-        # Signaled when an `agent` exits this zone.
-        # Sends the `agent` exiting this zone.
-        AgentExitsEvent<public>:listenable(agent) = external {}
-
-        # Updates *Selected Class* to `Agent`'s class.
-        UpdateSelectedClass<public>(Agent:agent):void = external {}
-
-        # Updates *Selected Team* to `Agent`'s team.
-        UpdateSelectedTeam<public>(Agent:agent):void = external {}
-
-    # Used to specify an area which allows (or prevents) various objects, terrain, or buildings from being set on fire.
-    fire_volume_device<public> := class<concrete><final>(effect_volume_device):
-        # Extinguishes objects inside this device area.
-        Extinguish<public>():void = external {}
-
-        # Ignites objects inside this device area.
-        Ignite<public>():void = external {}
-
-    # Base class for types of volumes with special gameplay properties.
-    effect_volume_device<public> := class<abstract><epic_internal>(creative_device_base):
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-    # Used to specify an area volume which can damage `agent`s, vehicles, and creatures.
-    damage_volume_device<public> := class<concrete><final>(effect_volume_device):
-        # Signaled when an `agent` enters the volume.
-        # Sends the `agent` entering the volume.
-        AgentEntersEvent<public>:listenable(agent) = external {}
-
-        # Signaled when an `agent` exits the volume.
-        # Sends the `agent` exiting the volume.
-        AgentExitsEvent<public>:listenable(agent) = external {}
-
-        # Updates *Selected Class* to `Agent`'s class.
-        UpdateSelectedClass<public>(Agent:agent):void = external {}
-
-        # Updates *Selected Team* to `Agent`'s team.
-        UpdateSelectedTeam<public>(Agent:agent):void = external {}
-
-        # Sets the damage to be applied each tick within the volume. `Damage` is clamped between `1` and `500`.
-        SetDamage<public>(Damage:int):void = external {}
-
-        # Returns the damage to be applied each tick within the volume.
-        GetDamage<public>()<transacts>:int = external {}
-
-    # Creates an impenetrable zone that can block `agent` movement and weapon fire.
-    barrier_device<public> := class<concrete><final>(creative_device_base):
         # Enables this device.
         Enable<public>():void = external {}
 
@@ -2694,54 +2706,6 @@ Devices<public> := module:
 
         # Returns all caught and removed items to the inventory. This only works when *Pool Type* is set to *Device Inventory*.
         Restock<public>():void = external {}
-
-    # Used to place a crash pad that can bounce players and protect them from fall damage.
-    crash_pad_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when an `agent` is launched by this device.
-        # Sends the launched `agent`.
-        LaunchedEvent<public>:listenable(agent) = external {}
-
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-    # Used to regenerate an `agent`'s health and/or shields.
-    health_powerup_device<public> := class<concrete><final>(powerup_device):
-
-    # Used to configure rules that can end the current round or game.
-    end_game_device<public> := class<concrete><final>(creative_device_base):
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-        # Ends the round/game. Uses `Agent`'s team to determine if the round/game ends when *Activating Team* is enabled.
-        Activate<public>(Agent:agent):void = external {}
-
-    # Used to show or hide parts of the HUD for players or teams. Use this with other devices such as the
-    # `hud_message_device`, `map_indicator_device`, and `billboard_device` to control exactly how much information
-    # players can see during a game, as well as how and when they see that information.
-    hud_controller_device<public> := class<concrete><final>(creative_device_base):
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-        # Sets the *Affected Class* option to `Agent`'s class.
-        UpdateAffectedClass<public>(Agent:agent):void = external {}
-
-        # Sets the *Affected Team* option to `Agent`'s team.
-        UpdateAffectedTeam<public>(Agent:agent):void = external {}
-
-        # Resets the *Affected Class* option to its starting value.
-        ResetAffectedClass<public>():void = external {}
-
-        # Resets the *Affected Team* option to its starting value.
-        ResetAffectedTeam<public>():void = external {}
 
     # Used with the `race_checkpoint_device` to create more advanced racing modes.
     race_manager_device<public> := class<concrete><final>(creative_device_base):
@@ -2797,8 +2761,41 @@ Devices<public> := module:
         # passed this checkpoint.
         SetAsCurrentCheckpoint<public>(Agent:agent):void = external {}
 
-    # Allows players to change their outfit in game!
-    changing_booth_device<public> := class<concrete><final>(creative_device_base):
+    # Used to regenerate an `agent`'s health and/or shields.
+    health_powerup_device<public> := class<concrete><final>(powerup_device):
+
+    # Used to configure rules that can end the current round or game.
+    end_game_device<public> := class<concrete><final>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+        # Ends the round/game. Uses `Agent`'s team to determine if the round/game ends when *Activating Team* is enabled.
+        Activate<public>(Agent:agent):void = external {}
+
+    # Used to show or hide parts of the HUD for players or teams. Use this with other devices such as the
+    # `hud_message_device`, `map_indicator_device`, and `billboard_device` to control exactly how much information
+    # players can see during a game, as well as how and when they see that information.
+    hud_controller_device<public> := class<concrete><final>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
+        # Sets the *Affected Class* option to `Agent`'s class.
+        UpdateAffectedClass<public>(Agent:agent):void = external {}
+
+        # Sets the *Affected Team* option to `Agent`'s team.
+        UpdateAffectedTeam<public>(Agent:agent):void = external {}
+
+        # Resets the *Affected Class* option to its starting value.
+        ResetAffectedClass<public>():void = external {}
+
+        # Resets the *Affected Team* option to its starting value.
+        ResetAffectedTeam<public>():void = external {}
 
     # Specialized `vehicle_spawner_device` that allows an armored battle bus to be configured and spawned.
     vehicle_spawner_armored_battle_bus_device<public> := class<concrete><final>(vehicle_spawner_device):
@@ -2825,6 +2822,25 @@ Devices<public> := module:
 
         # Commands current patrollers to follow the *Next Patrol Path Group* instead of the default *Patrol Path Group*.
         GoToNextPatrolGroup<public>():void = external {}
+
+    # Allows players to change their outfit in game!
+    changing_booth_device<public> := class<concrete><final>(creative_device_base):
+
+    # Used to trigger a custom response to a *Primary* or *Secondary* signal, sent by a *Signal Remote* item.
+    signal_remote_manager_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when a player has triggered the *Primary* signal using a *Signal Remote* item.
+        # Sends the `agent` that triggered the signal.
+        PrimarySignalEvent<public>:listenable(agent) = external {}
+
+        # Signaled when a player has triggered the *Secondary* signal using a *Signal Remote* item.
+        # Sends the `agent` that triggered the signal.
+        SecondarySignalEvent<public>:listenable(agent) = external {}
+
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
 
     # Used to configure and play audio from the device location or from registered `agent`s.
     audio_player_device<public> := class<concrete><final>(creative_device_base):
@@ -2900,22 +2916,6 @@ Devices<public> := module:
         # Disables this device.
         Disable<public>():void = external {}
 
-    # Used to trigger a custom response to a *Primary* or *Secondary* signal, sent by a *Signal Remote* item.
-    signal_remote_manager_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when a player has triggered the *Primary* signal using a *Signal Remote* item.
-        # Sends the `agent` that triggered the signal.
-        PrimarySignalEvent<public>:listenable(agent) = external {}
-
-        # Signaled when a player has triggered the *Secondary* signal using a *Signal Remote* item.
-        # Sends the `agent` that triggered the signal.
-        SecondarySignalEvent<public>:listenable(agent) = external {}
-
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
     # Used to spawn fireflies that can be collected by `agent`s.
     firefly_spawner_device<public> := class<concrete><final>(creative_device_base):
         # Signaled when a firefly is collected.
@@ -2979,6 +2979,14 @@ Devices<public> := module:
         # Sets the `Agent` to the `healthy` player state if they are in the `down but not out` player state.
         Revive<public>(Agent:agent):void = external {}
 
+    # Allows pickup items to be placed in the world..
+    item_placer_device<public> := class<concrete><final>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
+
     # Used to project a hologram of a character performing dance emotes.
     dance_mannequin_device<public> := class<concrete><final>(creative_device_base):
         # Enables this device.
@@ -3001,63 +3009,6 @@ Devices<public> := module:
 
         # Deactivates the hologram.
         DeactivateSkinAndEmoteCapture<public>():void = external {}
-
-    # Allows pickup items to be placed in the world..
-    item_placer_device<public> := class<concrete><final>(creative_device_base):
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-    # Used to display curated videos onto in-game screens or player HUDs.
-    video_player_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when this device becomes the controlling streaming device for the `agent`.
-        StreamStartedEvent<public>:listenable(agent) = external {}
-
-        # Enables this device.
-        Enable<public>():void = external {}
-
-        # Disables this device.
-        Disable<public>():void = external {}
-
-        # Enables collision checks on this device.
-        EnableCollision<public>():void = external {}
-
-        # Disables collision checks on this device.
-        DisableCollision<public>():void = external {}
-
-        # Transitions to fullscreen for `Agent`.
-        EnterFullScreen<public>(Agent:agent):void = external {}
-
-        # Transitions to fullscreen for `Agent`.
-        ExitFullScreen<public>(Agent:agent):void = external {}
-
-        # Hides the picture-in-picture video from `Agent`.
-        HidePIP<public>(Agent:agent):void = external {}
-
-        # Transitions the picture-in-picture video to the default size for `Agent`.
-        MakePIPDefaultSize<public>(Agent:agent):void = external {}
-
-        # Transitions the picture-in-picture video to full screen for `Agent`.
-        MakePIPFullScreen<public>(Agent:agent):void = external {}
-
-        # Turns off all streaming devices of this type on the island.
-        EndForAll<public>():void = external {}
-
-        # Restart the stream from the beginning.
-        Restart<public>():void = external {}
-
-        # Seeks to the *Triggered Seek Time*. Caution: The stream will pause while the video buffers when seeking.
-        Seek<public>():void = external {}
-
-        # Stops the currently playing stream and starts the custom stream with the audio only playing
-        # from this device. *Stream Priority* will not work until control is released.
-        TakeControl<public>():void = external {}
-
-        # If any streaming device has forced control of the stream, this will release it and play the highest
-        # priority stream in line.
-        ReleaseControl<public>():void = external {}
 
     # Specialized `vehicle_spawner_device` that allows a Nitro Drifter sedan to be configured and spawned.
     vehicle_spawner_nitro_drifter_sedan_device<public> := class<concrete><final>(vehicle_spawner_device):
@@ -3165,16 +3116,54 @@ Devices<public> := module:
         # Returns the number of players required for this counter to succeed.
         GetTargetCount<public>()<transacts>:int = external {}
 
-    # Controls how the sky looks, as well as giving you options for changing the sun, clouds, stars or other 
-    # objects in the sky above your island. You can control the sun and moon, and add other atmospheric
-    # elements like stars, fog and clouds. You can change the color of your light source, and blend different
-    # colors for your island's sky to create the perfect atmosphere for your game.
-    skydome_device<public> := class<concrete><final>(creative_device_base):
+    # Used to display curated videos onto in-game screens or player HUDs.
+    video_player_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when this device becomes the controlling streaming device for the `agent`.
+        StreamStartedEvent<public>:listenable(agent) = external {}
+
         # Enables this device.
         Enable<public>():void = external {}
 
         # Disables this device.
         Disable<public>():void = external {}
+
+        # Enables collision checks on this device.
+        EnableCollision<public>():void = external {}
+
+        # Disables collision checks on this device.
+        DisableCollision<public>():void = external {}
+
+        # Transitions to fullscreen for `Agent`.
+        EnterFullScreen<public>(Agent:agent):void = external {}
+
+        # Transitions to fullscreen for `Agent`.
+        ExitFullScreen<public>(Agent:agent):void = external {}
+
+        # Hides the picture-in-picture video from `Agent`.
+        HidePIP<public>(Agent:agent):void = external {}
+
+        # Transitions the picture-in-picture video to the default size for `Agent`.
+        MakePIPDefaultSize<public>(Agent:agent):void = external {}
+
+        # Transitions the picture-in-picture video to full screen for `Agent`.
+        MakePIPFullScreen<public>(Agent:agent):void = external {}
+
+        # Turns off all streaming devices of this type on the island.
+        EndForAll<public>():void = external {}
+
+        # Restart the stream from the beginning.
+        Restart<public>():void = external {}
+
+        # Seeks to the *Triggered Seek Time*. Caution: The stream will pause while the video buffers when seeking.
+        Seek<public>():void = external {}
+
+        # Stops the currently playing stream and starts the custom stream with the audio only playing
+        # from this device. *Stream Priority* will not work until control is released.
+        TakeControl<public>():void = external {}
+
+        # If any streaming device has forced control of the stream, this will release it and play the highest
+        # priority stream in line.
+        ReleaseControl<public>():void = external {}
 
     # Used to create a light which can have its color and brightness manipulated in response to in-game events.
     customizable_light_device<public> := class<concrete><final>(creative_device_base):
@@ -3201,6 +3190,49 @@ Devices<public> := module:
 
         # Brightens the light by *Dimming Amount*.
         UndimLight<public>():void = external {}
+
+    # Used to spawn and configure an aerial supply drop that can provide players with customized weapons/supplies.
+    supply_drop_spawner_device<public> := class<concrete><final>(creative_device_base):
+        # Signaled when the balloon on the supply crate is popped.
+        # Sends the `?agent` that popped the balloon. If no `agent` popped the balloon
+        # returns `false`.
+        BalloonPoppedEvent<public>:listenable(?agent) = external {}
+
+        # Signaled when the supply crate is opened.
+        # Sends the `agent` that opened the crate.
+        OpenedEvent<public>:listenable(agent) = external {}
+
+        # Signaled when the supply crate lands for the first time.
+        LandingEvent<public>:listenable(tuple()) = external {}
+
+        # Spawns a supply drop provided one hasn't already spawned. *Owning Team* is set to `Agent`'s team.
+        Spawn<public>(Agent:agent):void = external {}
+
+        # Spawns a supply drop provided one hasn't already spawned.
+        Spawn<public>():void = external {}
+
+        # Destroys the balloon and causes the supply crate to freefall.
+        DestroyBalloon<public>():void = external {}
+
+        # Opens the supply crate, ignoring the locked or unlocked state. `Agent` acts as the instigator of the open action.
+        Open<public>(Agent:agent):void = external {}
+
+        # Locks the supply crate so `agent`s cannot open it.
+        Lock<public>():void = external {}
+
+        # Unlocks the supply crate so `agent`s can open it.
+        Unlock<public>():void = external {}
+
+    # Controls how the sky looks, as well as giving you options for changing the sun, clouds, stars or other 
+    # objects in the sky above your island. You can control the sun and moon, and add other atmospheric
+    # elements like stars, fog and clouds. You can change the color of your light source, and blend different
+    # colors for your island's sky to create the perfect atmosphere for your game.
+    skydome_device<public> := class<concrete><final>(creative_device_base):
+        # Enables this device.
+        Enable<public>():void = external {}
+
+        # Disables this device.
+        Disable<public>():void = external {}
 
     # Specialized `vehicle_spawner_device` that allows a sportbike to be configured and spawned.
     vehicle_spawner_sportbike_device<public> := class<concrete><final>(vehicle_spawner_device):
@@ -3262,38 +3294,6 @@ Devices<public> := module:
 
         # Resets the alert state.
         ResetAlertCooldown<public>():void = external {}
-
-    # Used to spawn and configure an aerial supply drop that can provide players with customized weapons/supplies.
-    supply_drop_spawner_device<public> := class<concrete><final>(creative_device_base):
-        # Signaled when the balloon on the supply crate is popped.
-        # Sends the `?agent` that popped the balloon. If no `agent` popped the balloon
-        # returns `false`.
-        BalloonPoppedEvent<public>:listenable(?agent) = external {}
-
-        # Signaled when the supply crate is opened.
-        # Sends the `agent` that opened the crate.
-        OpenedEvent<public>:listenable(agent) = external {}
-
-        # Signaled when the supply crate lands for the first time.
-        LandingEvent<public>:listenable(tuple()) = external {}
-
-        # Spawns a supply drop provided one hasn't already spawned. *Owning Team* is set to `Agent`'s team.
-        Spawn<public>(Agent:agent):void = external {}
-
-        # Spawns a supply drop provided one hasn't already spawned.
-        Spawn<public>():void = external {}
-
-        # Destroys the balloon and causes the supply crate to freefall.
-        DestroyBalloon<public>():void = external {}
-
-        # Opens the supply crate, ignoring the locked or unlocked state. `Agent` acts as the instigator of the open action.
-        Open<public>(Agent:agent):void = external {}
-
-        # Locks the supply crate so `agent`s cannot open it.
-        Lock<public>():void = external {}
-
-        # Unlocks the supply crate so `agent`s can open it.
-        Unlock<public>():void = external {}
 
     # Used to create and customize your own visual effects. This is more flexible than the `vfx_spawner_device`,
     # which gives you a selection of pre-made visual effects to choose from but limits how much you can customize
