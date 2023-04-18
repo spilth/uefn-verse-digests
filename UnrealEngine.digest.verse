@@ -2,7 +2,7 @@
 #################################################
 # Generated Digest of Verse API
 # DO NOT modify this manually!
-# Generated from build: ++Fortnite+Release-24.10-CL-24903530
+# Generated from build: ++Fortnite+Release-24.20-CL-24939793
 #################################################
 
 Temporary<public> := module:
@@ -19,7 +19,7 @@ Temporary<public> := module:
         GetPlayerUI<native><public>(Player:player)<transacts><decides>:player_ui
 
         # The main interface for adding and removing `widget`s to a player's UI.
-        player_ui<native><public> := class<final>:
+        player_ui<native><public> := class<final><epic_internal>:
             # Adds `Widget` to this `player_ui` using default `player_ui_slot` configuration options.
             AddWidget<native><public>(Widget:widget):void
 
@@ -727,4 +727,3 @@ Temporary<public> := module:
         editable_curve<native><public> := class<final>:
             # Evaluates this float curve at the specified time and returns the result as a float
             Evaluate<native><public>(Time:float):float
-
