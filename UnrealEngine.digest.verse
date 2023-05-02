@@ -2,780 +2,734 @@
 #################################################
 # Generated Digest of Verse API
 # DO NOT modify this manually!
-# Generated from build: ++Fortnite+Release-24.20-CL-25058254
+# Generated from build: ++Fortnite+Release-24.30-CL-25210886
 #################################################
 
-Simulation<public> := module:
-    # Module import path: /Verse.org/Simulation/Tags
-    Tags<public> := module:
-        # A single gameplay tag, which represents a hierarchical name of the form x.y that is registered in the GameplayTagsManager You can filter the gameplay tags displayed in the editor.
-        tag<native><public> := class<abstract>:
+Temporary<public> := module:
+    using {/Verse.org/Colors}
+    using {/UnrealEngine.com/Temporary/SpatialMath}
+    using {/Verse.org/Simulation}
+    # Module import path: /UnrealEngine.com/Temporary/UI
+    UI<public> := module:
+        # Verse interface to native `widget_class`.
+        widget_class<native><public> := class<computes><final>:
+
+        # Returns the `player_ui` component associated with `Player`.
+        # Fails if there is no `player_ui` associated with `Player`.
+        GetPlayerUI<native><public>(Player:player)<transacts><decides>:player_ui
+
+        # The main interface for adding and removing `widget`s to a player's UI.
+        player_ui<native><public> := class<final><epic_internal>:
+            # Adds `Widget` to this `player_ui` using default `player_ui_slot` configuration options.
+            AddWidget<native><public>(Widget:widget):void
+
+            # Adds `Widget` to this `player_ui` using `Slot` for configuration options.
+            AddWidget<native><public>(Widget:widget, Slot:player_ui_slot):void
+
+            # Removes `Widget` from this `player_ui`.
+            RemoveWidget<native><public>(Widget:widget):void
+
+        # Base class for all UI elements drawn on the `player`'s screen.
+        widget<native><public> := class<abstract><unique><epic_internal>:
+            # Shows or hides the `widget` without removing itself from the containing `player_ui`.
+            # See `widget_visibility` for details.
+            SetVisibility<native><public>(InVisibility:widget_visibility):void
+
+            # Returns the current `widget_visbility` state.
+            GetVisibility<native><public>():widget_visibility
+
+            # Enables or disables whether the `player` can interact with this `widget`.
+            SetEnabled<native><public>(InIsEnabled:logic):void
+
+            # `true` if this `widget` can be modified interactively by the player.
+            IsEnabled<native><public>():logic
+
+            # Returns the `widget`'s parent `widget`.
+            # Fails if no parent exists, such as if this `widget` is not in the `player_ui` or is itself the root `widget`.
+            GetParentWidget<native><public>()<transacts><decides>:widget
+
+            # Returns the `widget` that added this `widget` to the `player_ui`. The root `widget` will return itself.
+            # Fails if this `widget` is not in the `player_ui`.
+            GetRootWidget<native><public>()<transacts><decides>:widget
+
+        # `widget` creation configuration options.
+        player_ui_slot<native><public> := struct:
+            # Controls `widget` rendering order. Greater values will be draw in front of lesser values.
+            ZOrder<native><public>:type {_X:int where 0 <= _X, _X <= 2147483647} = external {}
+
+            # Controls `widget` input event consumption.
+            InputMode<native><public>:ui_input_mode = external {}
+
+        # `widget` input consumption mode.
+        ui_input_mode<native><public> := enum:
+            # `widget` does not consume any input.
+            None
+            # `widget` consumes all inputs
+            All
+
+        # Parameters for `event`s signalled by a `widget`.
+        widget_message<native><public> := struct:
+            # The `player` that triggered the `event`.
+            Player<native><public>:player
+
+            # The `widget` that triggered the `event`.
+            Source<native><public>:widget
+
+        # Used by `widget.SetVisibility` determine how a `widget` is shown in the user interface.
+        widget_visibility<native><public> := enum:
+            # The `widget` is visible and occupies layout space.
+            Visible
+            # The `widget` is invisible and does not occupy layout space.
+            Collapsed
+            # The `widget` is invisible and occupies layout space.
+            Hidden
+
+        # Used by`widget` orientation modes.
+        orientation<native><public> := enum:
+            # Orient `widget`s from left to right.
+            Horizontal
+            # Orient `widget`s from top to bottom.
+            Vertical
+
+        # `widget` horizontal alignment mode.
+        horizontal_alignment<native><public> := enum:
+            # Center `widget` horizontally within the slot.
+            Center
+            # Align `widget` to the left of the slot.
+            Left
+            # Align `widget` to the right of the slot.
+            Right
+            # `widget` fills the slot horizontally.
+            Fill
+
+        # `widget` vertical alignment mode.
+        vertical_alignment<native><public> := enum:
+            # Center `widget` vertically within the slot.
+            Center
+            # Align `widget` to the top of the slot.
+            Top
+            # Align `widget` to the bottom of the slot.
+            Bottom
+            # `widget` fills the slot vertically.
+            Fill
+
+        # The anchors of a `widget` determine its the position and sizing relative to its parent.
+        # `anchor`s range from `(0.0, 0.0)` (left, top) to `(1.0, 1.0)` (right, bottom).
+        anchors<native><public> := struct:
+            # Holds the minimum anchors, (left, top). The valid range is between `0.0` and `1.0`.
+            Minimum<native><public>:vector2 = external {}
+
+            # Holds the maximum anchors, (right, bottom). The valid range is between `0.0` and `1.0`.
+            Maximum<native><public>:vector2 = external {}
+
+        # Specifies the gap outside each edge separating a `widget` from its neighbors.
+        # Distance is measured in units where `1.0` unit is the width of a pixel at 1080p resolution.
+        margin<native><public> := struct:
+            # The left edge spacing.
+            Left<native><public>:float = external {}
+
+            # The top edge spacing.
+            Top<native><public>:float = external {}
+
+            # The right edge spacing.
+            Right<native><public>:float = external {}
 
-        # A queryable collection of gameplay tags.
-        tag_view<native><public> := interface<epic_internal>:
-            # Determine if TagToCheck is present in this container, also checking against parent tags {"A.1"}.Has("A") will return True, {"A"}.Has("A.1") will return False If TagToCheck is not Valid it will always return False.
-            Has<public>(TagToCheck:tag)<transacts><decides>:void
+            # The bottom edge spacing.
+            Bottom<native><public>:float = external {}
 
-            # Checks if this container contains ANY of the tags in the specified container, also checks against parent tags {"A.1"}.HasAny({"A","B"}) will return True, {"A"}.HasAny({"A.1","B"}) will return False If InTags is empty/invalid it will always return False.
-            HasAny<public>(InTags:[]tag)<transacts><decides>:void
+        # Button is a container of a single child widget slot and fires the OnClick event when the button is clicked.
+        button<native><public> := class<final>(widget):
+            # The child widget of the button. Used only during initialization of the widget and not modified by SetSlot.
+            Slot<native><public>:button_slot
 
-            # Checks if this container contains ALL of the tags in the specified container, also checks against parent tags {"A.1","B.1"}.HasAll({"A","B"}) will return True, {"A","B"}.HasAll({"A.1","B.1"}) will return False If InTags is empty/invalid it will always return True, because there were no failed checks.
-            HasAll<public>(InTags:[]tag)<transacts><decides>:void
+            # Sets the child widget slot.
+            SetWidget<native><public>(InSlot:button_slot):void
 
-        tag_search_sort_type<native><public> := enum:
-            Unsorted
-            Sorted
+            # Subscribable event that fires when the button is clicked.
+            OnClick<public>():listenable(widget_message) = external {}
 
-        # Advanced tag search criteria
-        tag_search_criteria<native><public> := class:
-            # Tags required to be on the object.
-            RequiredTags<native><public>:[]tag = external {}
-
-            # Tags that are used if no required tags are specified. These are treated as if any of them will do.
-            PreferredTags<native><public>:[]tag = external {}
+        # Slot for button widget.
+        button_slot<native><public> := struct:
+            # The widget assigned to this slot.
+            Widget<native><public>:widget
 
-            # Tags that may NOT be on the object. All items with these tags are excluded from the search.
-            ExclusionTags<native><public>:[]tag = external {}
-
-            # Flag to request sorting the results by tag.
-            SortType<native><public>:tag_search_sort_type = external {}
-
-    @attribscope_class
-    @attribscope_struct
-    @attribscope_data
-    @customattribhandler
-    editable<public> := class(attribute):
-
-    agent<native><public> := class<unique><epic_internal>:
-
-    player<native><public> := class<unique><epic_internal>(agent):
-
-    # Waits specified number of seconds and then resumes. If `Seconds` = 0.0 then it waits until next tick/frame/update. If `Seconds` = Inf then it waits forever and only calls back if canceled - such as via `race`. If `Seconds` < 0.0 then it completes immediately and does not yield to other aysnc expressions.
-    # Waiting until the next update (0.0) is especially useful in a loop of a coroutine that needs to do some work every update and this yields to other coroutines so that it doesn't hog a processor's resources.
-    # Waiting forever (Inf) will have any expression that follows never be evaluated. Occasionally it is desireable to have a task never complete such as the last expression in a `race` subtask where the task must never win the race though it still may be canceled earlier.
-    # Immediately completing (less than 0) is useful when you want programmatic control over whether an expression yields or not.
-    Sleep<native><public>(Seconds:float)<suspends>:void
-
-    # Get the seconds that have elapsed since the world began simulating
-    GetSimulationElapsedTime<native><public>()<transacts>:float
-
-    team<native><public> := class<unique><epic_internal>:
-
-# Module import path: /Verse.org/Assets
-Assets<public> := module:
-
-using {/Verse.org/Colors}
-using {/Verse.org/Concurrency}
-# Module import path: /Verse.org/Verse
-Verse<public> := module:
-    # Makes a flattened `array` by concatenating the elements of `Arrays`.
-    Concatenate<public>(Arrays:[][]t where t:type)<computes>:[]t = external {}
-
-    # Makes an `array` containing `Input`'s elements from `StartIndex` to `StopIndex-1`.
-    # Fails unless `0 <= StartIndex <= StopIndex <= Input.Length`.
-    (Input:[]t where t:type).Slice<public>(StartIndex:int, StopIndex:int)<computes><decides>:[]t = external {}
-
-    # Makes an `array` containing `Input`'s elements from `StartIndex` to `Input.Length-1`.
-    # Succeeds if `0 <= StartIndex <= Input.Length`.
-    (Input:[]t where t:type).Slice<public>(StartIndex:int)<computes><decides>:[]t = external {}
-
-    # Makes an `array` by inserting `ElementsToInsert` into `Input` such that the first element of `ElementsToInsert` is at `InsertionIndex`.
-    (Input:[]t where t:type).Insert<public>(InsertionIndex:int, ElementsToInsert:[]t)<computes><decides>:[]t = external {}
-
-    # Makes an `array` by removing the element at `IndexToRemove` from `Input`.
-    # Succeeds if `0 <= IndexToRemove <= Input.Length-1`.
-    (Input:[]t where t:type).RemoveElement<public>(IndexToRemove:int)<computes><decides>:[]t = external {}
-
-    # Makes an `array` by removing the element at the lowest index that equals `ElementToRemove` from `Input`.
-    # Fails if `Input` did not contain any instances of `ElementToRemove`.
-    (Input:[]t where t:subtype(comparable)).RemoveFirstElement<public>(ElementToRemove:t)<computes><decides>:[]t = external {}
-
-    # Makes an `array` by removing all elements that equal `ElementToRemove` from `Input`.
-    (Input:[]t where t:subtype(comparable)).RemoveAllElements<public>(ElementToRemove:t)<computes>:[]t = external {}
-
-    # Makes an `array` by replacing the element at `IndexToReplace` with `ElementToReplaceWith` in `Input`.
-    # Succeeds if `0 <= IndexToReplace <= Input.Length-1`.
-    (Input:[]t where t:type).ReplaceElement<public>(IndexToReplace:int, ElementToReplaceWith:t)<computes><decides>:[]t = external {}
-
-    # Makes an `array` by replacing the element at the lowest index that equals `ElementToReplace` with `ElementToReplaceWith` in `Input`.
-    # Fails if `Input` did not contain any instances of `ElementToReplace`.
-    (Input:[]t where t:subtype(comparable)).ReplaceFirstElement<public>(ElementToReplace:t, ElementToReplaceWith:t)<computes><decides>:[]t = external {}
-
-    # Makes an `array` by replacing all elements that equal `ElementToReplace` with `ElementToReplaceWith` in `Input`.
-    (Input:[]t where t:subtype(comparable)).ReplaceAllElements<public>(ElementToReplace:t, ElementToReplaceWith:t)<computes>:[]t = external {}
+            # Horizontal alignment of the widget inside the slot.
+            HorizontalAlignment<native><public>:horizontal_alignment = external {}
+
+            # Vertical alignment of the widget inside the slot.
+            VerticalAlignment<native><public>:vertical_alignment = external {}
+
+            # Empty distance in pixels that surrounds the widget inside the slot. Assumes 1080p resolution.
+            Padding<native><public>:margin = external {}
 
-    # Makes an `array` by replacing all ranges of elements that equal `ElementsToReplace` with `Replacement` in `Input`.
-    # When there are multiple overlapping instances of `ElementsToReplace` in `Input`, only the position with the lowest
-    # index is replaced.
-    (Input:[]t where t:subtype(comparable)).ReplaceAll<public>(ElementsToReplace:[]t, Replacement:[]t)<transacts>:[]t = external {}
+        # Canvas is a container widget that allows for arbitrary positioning of widgets in the canvas' slots.
+        canvas<native><public> := class<final>(widget):
+            # The child widgets of the canvas. Used only during initialization of the widget and not modified by Add/RemoveWidget.
+            Slots<native><public>:[]canvas_slot = external {}
+
+            # Adds a new child slot to the canvas.
+            AddWidget<native><public>(Slot:canvas_slot):void
 
-    # Makes an `array` by removing `Input`'s elements from `StartIndex` to `StopIndex-1`.
-    # Succeeds if `0 <= StartIndex <= StopIndex <= Input.Length`.
-    (Input:[]t where t:type).Remove<public>(StartIndex:int, StopIndex:int)<computes><decides>:[]t = external {}
+            # Removes a slot containing the given widget.
+            RemoveWidget<native><public>(Widget:widget):void
 
-    # Returns the first index whose element in `Input` equals `ElementToFind`.
-    # Fails if ElementToFind does not exist in the array.
-    (Input:[]t where t:subtype(comparable)).Find<public>(ElementToFind:t)<computes><decides>:int = external {}
+        # Slot for a canvas widget.
+        canvas_slot<native><public> := struct:
+            # The border for the margin and how the widget is resized with its parent.
+            # Values are defined between 0.0 and 1.0.
+            Anchors<native><public>:anchors = external {}
 
-    # Implemented by classes that allow users to cancel an operation. For example, calling
-    # `subscribable.Subscribe` with a callback returns a `cancelable` object. Calling `Cancel`
-    # on the return object unsubscribes the callback.
-    cancelable<native><public> := interface:
-        # Prevents any current or future work from completing.
-        Cancel<public>()<transacts>:void
+            # The offset that defined the size and position of the widget.
+            # When the anchors are well defined, the Offsets.Left represent the distance in pixels from the Anchors Minimum.X,
+            # the Offsets.Bottom represent the distance in pixel from the Anchors Maximun.Y, effectily controlling the desired
+            # widget size. When the anchors are not well defined, the Offsets.Left and Offsets.Top represent the widget position
+            # and Offsets.Right and Offset.Bottom represent the widget size.
+            Offsets<native><public>:margin = external {}
 
-    # Implemented by classes whose instances have limited lifetimes.
-    disposable<native><public> := interface:
-        # Cleans up this object.
-        Dispose<public>():void
+            # When true we use the widget's desired size. The size calculated by the Offets is ignored.
+            SizeToContent<native><public>:logic = external {}
 
-    # Halts the Verse runtime with error `Message`.
-    Err<native><public>(Message:[]char)<computes>:false
+            # Alignment is the pivot/origin point of the widget.
+            # Starting in the upper left at (0.0,0.0), ending in the lower right at (1.0,1.0).
+            Alignment<native><public>:vector2 = external {}
 
-    # A *recurring*, successively signaled parametric `event` with a `payload` allowing a
-    # simple mechanism to coordinate between concurrent tasks:
-    #  * `Await` suspends tasks to wait on this `event`,
-    #  * another task `Signal`s this `event` and resumes the suspended tasks in FIFO order.
-    event<native><public>(t:type)<computes> := class(signalable(t), awaitable(t)):
-        # Suspends the current task until another task calls `Signal`.
-        # If called during another invocation of `Signal`, the the task will still suspend
-        # and resume during the next call to `Signal`.
-        Await<native><override>()<suspends>:t
+            # Z Order of this slot relative to other slots in this canvas panel.
+            # Higher values are rendered last (and so they will appear to be on top)
+            ZOrder<native><public>:type {_X:int where 0 <= _X, _X <= 2147483647} = external {}
 
-        # Concurrently resumes the tasks that were suspended by `Await` calls before this
-        # call to `Signal`.
-        # 
-        # Tasks are resumed in the order they were suspended. Each task will perform as
-        # much work as it can until it encounters a blocking call, whereupon it will
-        # transfer control to the next suspended task.
-        Signal<native><override>(Val:t):void
+            # The widget assigned to this slot.
+            Widget<native><public>:widget
 
-    # A *recurring*, successively signaled event allowing a simple mechanism to coordinate
-    # between concurrent tasks.
-    event<public>()<computes> := event(tuple())
+        # Make a canvas slot for fixed position widget.
+        # If Size is set, then the Offsets is calculated and the SizeToContent is set to false.
+        # If Size is not set, then Right and Bottom are set to zero and are not used. The widget size will be automatically calculated. The SizeToContent is set to true.
+        # The widget is not anchored and will not move if the parent is resized.
+        # The Anchors is set to zero.
+        MakeCanvasSlot<native><public>(Widget:widget, Position:vector2, ?Size:vector2 = external {}, ?ZOrder:type {_X:int where 0 <= _X, _X <= 2147483647} = external {}, ?Alignment:vector2 = external {})<computes>:canvas_slot
+
+        # A solid color widget.
+        color_block<native><public> := class<final>(widget):
+            # The color of the widget. Used only during initialization of the widget and not modified by SetColor.
+            DefaultColor<native><public>:color = external {}
+
+            # The opacity of the widget. Used only during initialization of the widget and not modified by SetOpacity.
+            DefaultOpacity<native><public>:type {_X:float where 0.000000 <= _X, _X <= 1.000000} = external {}
+
+            # The size this widget desired to be displayed in. Used only during initialization of the widget and not modified by SetDesiredSize.
+            DefaultDesiredSize<native><public>:vector2 = external {}
+
+            # Sets the widget's color.
+            SetColor<native><public>(InColor:color):void
+
+            # Gets the widget's color.
+            GetColor<native><public>():color
+
+            # Sets the widgets's opacity.
+            SetOpacity<native><public>(InOpacity:type {_X:float where 0.000000 <= _X, _X <= 1.000000}):void
+
+            # Gets the widget's opacity.
+            GetOpacity<native><public>():type {_X:float where 0.000000 <= _X, _X <= 1.000000}
+
+            # Sets the size this widget desired to be displayed in.
+            SetDesiredSize<native><public>(InDesiredSize:vector2):void
+
+            # Gets the size this widget desired to be displayed in.
+            GetDesiredSize<native><public>():vector2
+
+        # Overlay is a container consisting of widgets stacked on top of each other.
+        overlay<native><public> := class<final>(widget):
+            # The child widgets of the overlay. Used only during initialization of the widget and not modified by Add/RemoveWidget.
+            Slots<native><public>:[]overlay_slot = external {}
+
+            # Add a new child slot to the overlay. Slots are added at the end.
+            AddWidget<native><public>(Slot:overlay_slot):void
+
+            # Removes a slot containing the given widget
+            RemoveWidget<native><public>(Widget:widget):void
+
+        # Slot for an overlay widget
+        overlay_slot<native><public> := struct:
+            # The widget assigned to this slot.
+            Widget<native><public>:widget
 
-    # Returns the smallest `int` that is greater than or equal to `Val`.
-    # Fails if `not IsFinite(Val)`.
-    Ceil<native><public>(Val:float)<varies><decides>:int
+            # Horizontal alignment of the widget inside the slot.
+            # This alignment is only applied after the layout space for the widget slot is created and determines the widget alignment within that space.
+            HorizontalAlignment<native><public>:horizontal_alignment = external {}
 
-    # Returns the largest `int` that is less than or equal to `Val`.
-    # Fails if `not IsFinite(Val)`.
-    Floor<native><public>(Val:float)<varies><decides>:int
+            # Vertical alignment of the widget inside the slot.
+            # This alignment is only applied after the layout space for the widget slot is created and determines the widget alignment within that space.
+            VerticalAlignment<native><public>:vertical_alignment = external {}
 
-    # Returns `Val` rounded to the nearest `int`. When the fractional part of `Val` is `0.5`,
-    # rounds to the nearest *even* `int` (per the IEEE-754 default rounding mode).
-    # Fails if `not IsFinite(Val)`.
-    Round<native><public>(Val:float)<varies><decides>:int
+            # Empty distance in pixels that surrounds the widget inside the slot. Assumes 1080p resolution.
+            Padding<native><public>:margin = external {}
 
-    # Returns the `int` that equals `Val` without the fractional part
-    # Fails if `not IsFinite(val)`.
-    Int<native><public>(Val:float)<varies><decides>:int
+        # Stack box is a container of a list of widgets stacked either vertically or horizontally.
+        stack_box<native><public> := class<final>(widget):
+            # The child widgets of the stack box. Used only during initialization of the widget and not modified by Add/RemoveWidget.
+            Slots<native><public>:[]stack_box_slot = external {}
 
-    # Makes a `string` representation of `Val`.
-    ToString<native><public>(Val:float)<varies>:[]char
+            # The orientation of the stack box. Either stack widgets horizontal or vertical.
+            Orientation<native><public>:orientation
 
-    # Makes a printable `string` representation of `Val`.
-    ToString<native><public>(Val:int)<computes>:[]char
+            # Add a new child slot to the stack box. Slots are added at the end.
+            AddWidget<native><public>(Slot:stack_box_slot):void
 
-    # Implemented by classes whose instances can become invalid at runtime.
-    invalidatable<native><public> := interface(disposable):
-        # Succeeds if this object is still valid.
-        IsValid<public>()<transacts><decides>:void
+            # Removes a slot containing the given widget
+            RemoveWidget<native><public>(Widget:widget):void
 
-    # A parametric interface combining `awaitable` and `subscribable`.
-    listenable<public>(payload:type)<computes> := interface(awaitable(payload), subscribable(payload)):
+        # Slot for a stack_box widget
+        stack_box_slot<native><public> := struct:
+            # The widget assigned to this slot.
+            Widget<native><public>:widget
 
-    # A parameterless interface combining `awaitable` and `subscribable`.
-    listenable<public>()<computes> := listenable(tuple())
+            # Horizontal alignment of the widget inside the slot.
+            # This alignment is only applied after the layout space for the widget slot is created and determines the widget alignment within that space.
+            HorizontalAlignment<native><public>:horizontal_alignment = external {}
 
-    # Used for message localization.
-    locale<native><public> := struct<computes><epic_internal>:
+            # Vertical alignment of the widget inside the slot.
+            # This alignment is only applied after the layout space for the widget slot is created and determines the widget alignment within that space.
+            VerticalAlignment<native><public>:vertical_alignment = external {}
 
-    # A localizable text message.
-    message<native><public> := class<computes><epic_internal>:
+            # Empty distance in pixels that surrounds the widget inside the slot. Assumes 1080p resolution.
+            Padding<native><public>:margin = external {}
 
-    # Makes a `string` by localizing `Message` based on the current `locale`.
-    Localize<native_callable><public>(Message:message)<varies>:[]char = external {}
+            # The available space will be distributed proportionally.
+            # If not set, the slot will use the desired size of the widget.
+            Distribution<native><public>:?float = external {}
 
-    localizable_value<epic_internal> := interface:
+        # Text justification values:
+        #   Left: Justify the text logically to the left.
+        #   Center: Justify the text in the center.
+        #   Right: Justify the text logically to the right.
+        # The Left and Right value will flip when the local culture is right-to-left.
+        text_justification<native><public> := enum:
+            Left
+            Center
+            Right
 
-    localizable_string<epic_internal> := class<computes><internal>(localizable_value):
+        # Text overflow policy values:
+        #   Clip: Overflowing text will be clipped.
+        #   Ellipsis: Overflowing text will be replaced with an ellipsis.
+        text_overflow_policy<native><public> := enum:
+            Clip
+            Ellipsis
 
-    MakeLocalizableValue<epic_internal>(V:[]char)<computes>:localizable_string = external {}
+        # Base widget for text widget.
+        text_base<native><public> := class<abstract>(widget):
+            # The text to display to the user. Used only during initialization of the widget and not modified by SetText.
+            DefaultText<native><localizes><public>:message = external {}
 
-    localizable_int<epic_internal> := class<computes><internal>(localizable_value):
+            # The color of the displayed text. Used only during initialization of the widget and not modified by SetTextColor.
+            DefaultTextColor<native><public>:color = external {}
 
-    MakeLocalizableValue<epic_internal>(V:int)<computes>:localizable_int = external {}
+            # The opacity of the displayed text. Used only during initialization of the widget and not modified by SetTextOpacity.
+            DefaultTextOpacity<native><public>:type {_X:float where 0.000000 <= _X, _X <= 1.000000} = external {}
 
-    localizable_float<epic_internal> := class<computes><internal>(localizable_value):
+            # The justification to display to the user. Used only during initialization of the widget and not modified by SetJustification.
+            DefaultJustification<native><public>:text_justification = external {}
 
-    MakeLocalizableValue<epic_internal>(V:float)<computes>:localizable_float = external {}
+            # The policy that determine what happens when the text is longer than its allowed length.
+            #  Used only during initialization of the widget and not modified by SetOverflowPolicy.
+            DefaultOverflowPolicy<native><public>:text_overflow_policy = external {}
 
-    MakeMessageInternal<native><epic_internal>(K:[]char, D:[]char, S:[[]char]localizable_value)<converges>:message
+            # Sets the text displayed in the widget.
+            SetText<native><public>(InText:message):void
 
-    # Pi, the ratio of the circumference of a circle to its diameter.
-    PiFloat<public>:float = external {}
+            # Gets the text currently in the widget.
+            GetText<native><public>():[]char
 
-    # Constrains the value of `Val` between `A` and `B`. Robustly handles different argument orderings.
-    # Returns the median of `Val`, `A`, and `B`, such that comparisons with `NaN` operate as if `NaN > +Inf`.
-    Clamp<public>(Val:float, A:float, B:float)<computes>:float = external {}
+            # Sets the text justification in the widget.
+            SetJustification<native><public>(InJustification:text_justification):void
 
-    # Constrains the value of `Val` between `A` and `B`. Robustly handles different argument orderings.
-    # Returns the median of `Val`, `A`, and `B`.
-    Clamp<native><public>(Val:int, A:int, B:int)<computes>:int
+            # Gets the text justificattion in the widget.
+            GetJustification<native><public>():text_justification
 
-    # Returns the minimum of `X` and `Y`.
-    Min<public>(X:int, Y:int)<computes>:int = external {}
+            # Sets the policy that determine what happens when the text is longer than its allowed length.
+            SetOverflowPolicy<native><public>(InOverflowPolicy:text_overflow_policy):void
 
-    # Returns the maximum of `X` and `Y`.
-    Max<public>(X:int, Y:int)<computes>:int = external {}
+            # Gets the policy that determine what happens when the text is longer than its allowed length.
+            GetOverflowPolicy<native><public>():text_overflow_policy
 
-    # Returns the minimum of `X` and `Y` unless either are `NaN`.
-    # Returns `NaN` if either `X` or `Y` are `NaN`.
-    Min<public>(X:float, Y:float)<computes>:float = external {}
+            # Sets the color of the displayed text.
+            SetTextColor<native><public>(InColor:color):void
 
-    # Returns the maximum of `X` and `Y` unless either are `NaN`.
-    # Returns `NaN` if either `X` or `Y` are `NaN`.
-    Max<public>(X:float, Y:float)<computes>:float = external {}
+            # Gets the color of the displayed text.
+            GetTextColor<native><public>():color
 
-    # Returns the square root of `X` if `X >= 0.0`.
-    # Returns `NaN` if `X < 0.0`.
-    Sqrt<native><public>(X:float)<varies>:float
+            # Sets the opacity of the displayed text.
+            SetTextOpacity<native><public>(InOpacity:type {_X:float where 0.000000 <= _X, _X <= 1.000000}):void
 
-    # Returns the sine of `X` if `IsFinite(X)`.
-    # Returns `NaN` if `not IsFinite(X)
-    Sin<native><public>(X:float)<varies>:float
+            # Gets the opacity of the displayed text.
+            GetTextOpacity<native><public>():type {_X:float where 0.000000 <= _X, _X <= 1.000000}
 
-    # Returns the cosine of `X` if `IsFinite(X)`.
-    # Returns `NaN` if `not IsFinite(X)
-    Cos<native><public>(X:float)<varies>:float
+    using {/Verse.org/Native}
+    # Module import path: /UnrealEngine.com/Temporary/SpatialMath
+    SpatialMath<public> := module:
+        @editable
+        @import_as("/Script/EpicGamesTemporary.FVerseRotation")
+        rotation<native><public> := struct<concrete>:
 
-    # Returns the tangent of `X` if `IsFinite(X)`.
-    # Returns `NaN` if `not IsFinite(X).
-    Tan<native><public>(X:float)<varies>:float
+        # Makes a `rotation` from `Axis` and `AngleRadians` using a left-handed sign convention (e.g.
+        # a positive rotation around +Z takes +X to +Y). If `Axis.IsAlmostZero[]`, make the identity rotation.
+        MakeRotation<native><public>(Axis:vector3, AngleRadians:float)<varies>:rotation
 
-    # Returns the inverse sine (arcsine) of `X` if `-1.0 <= X <= 1.0`.
-    ArcSin<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `YawRightDegrees`, `PitchUpDegrees`, and `RollClockwiseDegrees`, in that order:
+        #  * first a *yaw* about the Z axis with a positive angle indicating a clockwise rotation when viewed from above,
+        #  * then a *pitch* about the new Y axis with a positive angle indicating 'nose up',
+        #  * followed by a *roll* about the new X axis axis with a positive angle indicating a clockwise rotation when viewed along +X.
+        # Note that these conventions differ from `MakeRotation` but match `ApplyYaw`, `ApplyPitch`, and `ApplyRoll`.
+        MakeRotationFromYawPitchRollDegrees<native><public>(YawRightDegrees:float, PitchUpDegrees:float, RollClockwiseDegrees:float)<varies>:rotation
 
-    # Returns the inverse cosine (arccosine) of `X` if `-1.0 <= X <= 1.0`.
-    ArcCos<native><public>(X:float)<varies>:float
+        # Makes the identity `rotation`.
+        IdentityRotation<native><public>()<converges>:rotation
 
-    # Returns the inverse tangent (arctangent) of `X` such that:
-    # `-PiFloat/2.0 <= ArcTan(x) <= PiFloat/2.0`.
-    ArcTan<native><public>(X:float)<varies>:float
+        # Returns the 'distance' between `Rotation1` and `Rotation2`. The result will be between:
+        #  * `0.0`, representing equivalent rotations and
+        #  * `1.0` representing rotations which are 180 degrees apart (i.e., the shortest rotation between them is 180 degrees around some axis).
+        Distance<native><public>(Rotation1:rotation, Rotation2:rotation)<varies>:float
 
-    # Returns the angle in radians at the origin between a ray pointing to `(X, Y)`
-    # and the positive `X` axis such that `-PiFloat < ArcTan(Y, X) <= PiFloat`.
-    # Returns 0.0 if `X=0.0 and Y=0.0`.
-    ArcTan<native><public>(Y:float, X:float)<varies>:float
+        # Makes a `rotation` by applying `PitchUpRadians` of right-handed rotation around the local +Y axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyPitch<native><public>(PitchUpRadians:float)<transacts>:rotation
 
-    # Returns the hyperbolic sine of `X`.
-    Sinh<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `RollClockwiseRadians` of right-handed rotation around the local +X axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyRoll<native><public>(RollClockwiseRadians:float)<transacts>:rotation
 
-    # Returns the hyperbolic cosine of `X`.
-    Cosh<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `YawRightRadians` of left-handed rotation around the local +Z axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyYaw<native><public>(YawRightRadians:float)<transacts>:rotation
 
-    # Returns the hyperbolic tangent of `X`.
-    Tanh<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `AngleRadians` of left-handed rotation around the world +X axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyWorldRotationX<native><public>(AngleRadians:float)<transacts>:rotation
 
-    # Returns the inverse hyperbolic sine of `X` if `IsFinite(X)`.
-    ArSinh<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `AngleRadians` of left-handed rotation around the world +Y axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyWorldRotationY<native><public>(AngleRadians:float)<transacts>:rotation
 
-    # Returns the inverse hyperbolic cosine of `X` if `1.0 <= X`.
-    ArCosh<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `AngleRadians` of left-handed rotation around the world +Z axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyWorldRotationZ<native><public>(AngleRadians:float)<transacts>:rotation
 
-    # Returns the inverse hyperbolic tangent of `X` if `IsFinite(X)`.
-    ArTanh<native><public>(X:float)<varies>:float
+        # Makes a `rotation` by applying `AngleRadians` of left-handed rotation around the local +Y axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyLocalRotationY<public>(AngleRadians:float)<transacts>:rotation = external {}
 
-    # Returns `A` to the power of `B`.
-    Pow<native><public>(A:float, B:float)<varies>:float
+        # Makes a `rotation` by applying `AngleRadians` of left-handed rotation around the local +Z axis to `InitialRotation`.
+        (InitialRotation:rotation).ApplyLocalRotationZ<public>(AngleRadians:float)<transacts>:rotation = external {}
 
-    # Returns `X` if `X` is finite.
-    # Fails if `X` is one of:`
-    #  * `+Inf`
-    #  * `-Inf`
-    #  * `NaN`
-    (X:float).IsFinite<public>()<computes><decides>:float = external {}
+        # Makes a `rotation` by composing `AdditionalRotation` to `InitialRotation`.
+        (InitialRotation:rotation).RotateBy<native><public>(AdditionalRotation:rotation)<transacts>:rotation
 
-    # Returns the quotient `X/Y` as defined by Euclidean division, i.e.:
-    #  * `Quotient[X/Y] = Floor[X/Y]` when `Y > 0`
-    #  * `Quotient[X/Y] = Ceil[X/Y]` when `Y < 0`
-    #  * `Quotient[X/Y] * Y + Mod[X,Y] = X`
-    # Fails if `Y = 0`.
-    Quotient<native><public>(X:int, Y:int)<computes><decides>:int
+        # Makes a `rotation` by composing the inverse of `RotationToRemove` from `InitialRotation`. such that InitialRotation = RotateBy(UnrotateBy(InitialRotation, RotationToRemove), RotationToRemove). This is equivalent to RotateBy(InitialRotation, InvertRotation(RotationToRemove))
+        (InitialRotation:rotation).UnrotateBy<native><public>(RotationToRemove:rotation)<transacts>:rotation
 
-    # Returns the remainder of `X/Y` as defined by Euclidean division, i.e.:
-    #  * `Mod[X,Y] = X - Quotient(X/Y)*Y`
-    #  * `0 <= Mod[X,Y] < Abs(Y)`
-    # Fails if `Y=0`.
-    Mod<native><public>(X:int, Y:int)<computes><decides>:int
+        # Makes an `[]float` with three elements:
+        #  * *yaw* degrees of `rotation`
+        #  * *pitch* degrees of `rotation`
+        #  * *roll* degrees of `rotation`
+        # using the conventions of `MakeRotationFromYawPitchRollDegrees`.
+        (Rotation:rotation).GetYawPitchRollDegrees<native><public>()<varies>:[]float
 
-    # Returns the natural exponent of `X`.
-    Exp<native><public>(X:float)<varies>:float
+        # Makes a `vector3` from the axis of `rotation`.
+        # If `rotation` is nearly identity, this will return the +X axis. See also `GetAngle`.
+        (Rotation:rotation).GetAxis<native><public>()<varies>:vector3
 
-    # Returns the natural logarithm of `X`.
-    Ln<native><public>(X:float)<varies>:float
+        # Returns the radians of `rotation` around the axis of `rotation`. See also `GetAxis`.
+        (Rotation:rotation).GetAngle<native><public>()<varies>:float
 
-    # Returns the base `B` logarithm of `X`.
-    Log<public>(B:float, X:float)<varies>:float = external {}
+        # Makes the smallest angular `rotation` from `InitialRotation` to `FinalRotation` such that:
+        # `InitialRotation.RotateBy(MakeShortestRotationBetween(InitialRotation, FinalRotation)) = FinalRotation` and
+        # `MakeShortestRotationBetween(InitialRotation, FinalRotation)?.GetAngle()` is as small as possible.
+        MakeShortestRotationBetween<native><public>(InitialRotation:rotation, FinalRotation:rotation)<transacts>:rotation
 
-    # Used to linearly interpolate/extrapolate between `From` (when `Parameter = 0.0`)
-    # and `To` (when `Parameter = 1.0`). Expects that all arguments are finite.
-    # Returns `From*(1 - Parameter) + To*Parameter`.
-    Lerp<native><public>(From:float, To:float, Parameter:float)<varies>:float
+        # Makes the smallest angular `rotation` from `InitialVector` to `FinalVector` such that:
+        # `InitialVector.RotateBy(MakeShortestRotationBetween(InitialVector, Vector)) = FinalVector` and
+        # `MakeShortestRotationBetween(InitialVector, FinalVector)?.GetAngle()` is as small as possible.
+        MakeShortestRotationBetween<native><public>(InitialVector:vector3, FinalVector:vector3)<transacts>:rotation
 
-    # Returns the sign of `Val`:
-    #  * `1` if `Val > 0`
-    #  * `0` if `Val = 0`
-    #  * `-1` if `Val < 0`
-    Sgn<public>(Val:int)<computes>:int = external {}
+        # Used to perform spherical linear interpolation between `From` (when `Parameter = 0.0`)
+        # and `To` (when `Parameter = 1.0`). Expects that `0.0 <= Parameter <= 1.0`.
+        Slerp<native><public>(InitialRotation:rotation, FinalRotation:rotation, Parameter:float)<transacts><decides>:rotation
 
-    # Returns the sign of `Val`:
-    #  * `1.0` if `Val > 0.0`
-    #  * `0.0` if `Val = 0.0`
-    #  * `-1.0` if `Val < 0.0`
-    #  * `NaN` if `Val = NaN`
-    Sgn<public>(Val:float)<computes>:float = external {}
+        # Makes a `vector3` by applying `Rotation` to `Vector`.
+        (Rotation:rotation).RotateVector<native><public>(Vector:vector3)<transacts>:vector3
 
-    # Succeeds if `Val` is within `AbsoluteTolerance` of `0.0`.
-    (Val:float).IsAlmostZero<public>(AbsoluteTolerance:float)<computes><decides>:void = external {}
+        # Makes a `vector3` by applying the inverse of `Rotation` to `Vector`.
+        (Rotation:rotation).UnrotateVector<native><public>(Vector:vector3)<transacts>:vector3
 
-    # Succeeds if `Val1` and `Val2` are within `AbsoluteTolerance` of each other.
-    IsAlmostEqual<public>(Val1:float, Val2:float, AbsoluteTolerance:float)<computes><decides>:void = external {}
+        # Makes a `rotation` by inverting `Rotation` such that `ApplyRotation(Rotation, Rotation.Invert())) = IdentityRotation`.
+        (Rotation:rotation).Invert<native><public>()<transacts>:rotation
 
-    # Writes `Message` to a dedicated `Print` log while displaying it in `Color` on the
-    # client screen for `Duration` seconds. By default, `Color` is `NamedColors.White` and
-    # `Duration` is `2.0` seconds.
-    Print<native><public>(Message:[]char, ?Duration:float = external {}, ?Color:color = external {}):void
+        # Returns `Rotation` if it does not contain `NaN`, `Inf` or `-Inf`.
+        (Rotation:rotation).IsFinite<native><public>()<computes><decides>:rotation
 
-    # A parametric interface implemented by events with a `payload` that can be signaled.
-    # Can be used with `awaitable`, `subscribable`, or both (see: `listenable`).
-    signalable<public>(payload:type)<computes> := interface:
-        # Concurrently resumes the tasks waiting for this event in `awaitable.Await` and 
-        # synchronously invokes any callbacks added to this event by `subscribable.Subscribe`.
-        Signal<public>(Val:payload):void
+        # Makes a unit `vector3` pointing in the local space *forward* direction in world space coordinates.
+        # This is equivalent to: `RotateVector(Rotation, vector3{X:=1.0, Y:=0.0, Z:=0.0})`.
+        (Rotation:rotation).GetLocalForward<public>()<transacts>:vector3 = external {}
 
-    # Makes a `string` by concatenating `Separator` between the elements of `Strings`.
-    Join<native><public>(Strings:[][]char, Separator:[]char)<computes>:[]char
+        # Makes a unit `vector3` pointing in the the local space *right* direction in world space coordinates.
+        # This is equivalent to: `RotateVector(Rotation, vector3{X:=0.0, Y:=1.0, Z:=0.0})`.
+        (Rotation:rotation).GetLocalRight<public>()<transacts>:vector3 = external {}
 
-    # Returns `String` without modification.
-    ToString<public>(String:[]char)<computes>:[]char = external {}
+        # Makes a unit `vector3` pointing in the local space *up* direction in world space coordinates.
+        # This is equivalent to: `RotateVector(Rotation, vector3{X:=0.0, Y:=0.0, Z:=1.0})`.
+        (Rotation:rotation).GetLocalUp<public>()<transacts>:vector3 = external {}
 
-    # Makes a `string` from `Character`.
-    ToString<native><public>(Character:char)<computes>:[]char
+        # Makes a `string` representation of `rotation` in axis/degrees format with a left-handed sign convention.
+        # `ToString(MakeRotation(vector3{X:=1.0, Y:=0.0, Z:=0.0}, PiFloat/2.0))` produces the string:
+        # `"Axis: {x=1.000000,y=0.000000,z=0.000000} Angle: 90.000000"`.
+        ToString<native><public>(Rotation:rotation)<varies>:[]char
 
-    # A parametric interface implemented by events with a `payload` that can be subscribed to.
-    # Matched with `signalable.`
-    subscribable<public>(t:type)<computes> := interface:
-        # Registers `Callback` to be invoked on matching calls to `signable.Signal`.
-        # Returns an unsubscriber object. Call `cancelable.Cancel` on the unsubscriber to unregister `Callback`.
-        Subscribe<public>(Callback:type {__(:t):void})<transacts>:cancelable
+        # Returns radians from `Degrees`.
+        DegreesToRadians<public>(Degrees:float)<varies>:float = external {}
 
-    # A parameterless interface implemented by events that can be subscribed to.
-    subscribable<public>()<computes> := subscribable(tuple())
+        # Returns degrees from `Radians`.
+        RadiansToDegrees<public>(Radians:float)<varies>:float = external {}
 
-# Module import path: /Verse.org/Random
-Random<public> := module:
-    # Returns a random `float` between `Low` and `High`, inclusive.
-    GetRandomFloat<native><public>(Low:float, High:float)<varies>:float
+        # A combination of scale, rotation, and translation, applied in that order.
+        transform<native><public> := struct<concrete><computes>:
+            @editable
+            # The scale of this `transform`.
+            Scale<native><public>:vector3 = external {}
 
-    # Returns a random `int` between `Low` and `High`, inclusive.
-    GetRandomInt<native><public>(Low:int, High:int)<varies>:int
+            @editable
+            # The rotation of this `transform`.
+            Rotation<native><public>:rotation = external {}
 
-    # Makes an `array` with the same elements as `Input` shuffled in a random order.
-    Shuffle<public>(Input:[]t where t:type)<transacts>:[]t = external {}
+            @editable
+            # The location of this `transform`.
+            Translation<native><public>:vector3 = external {}
 
-# Module import path: /Verse.org/Colors
-Colors<public> := module:
-    # Represents colors as RGB triples in the ACES 2065-1 color space.
-    # Component values are linear (i.e. `*gamma* = 1.0`).
-    color<native><public> := struct<computes>:
-        # Red component of this `color`.
-        R<native><public>:float = external {}
+        # Makes a `vector3` by applying `InTransform` to `InVector`.
+        TransformVector<native><public>(InTransform:transform, InVector:vector3)<varies>:vector3
 
-        # Green component of this `color`.
-        G<native><public>:float = external {}
+        # Makes a `vector3` by applying `InTransform` to `InVector` without applying `InTransform.Scale`.
+        TransformVectorNoScale<native><public>(InTransform:transform, InVector:vector3)<varies>:vector3
 
-        # Blue component of this `color`.
-        B<native><public>:float = external {}
+        # 2-dimensional vector with `float` components.
+        vector2<native><public> := struct<concrete><computes>:
+            @editable
+            X<native><public>:float = external {}
 
-    # Makes an ACES 2065-1 `color` from the component-wise sum of `c0` and `c1`.
-    operator'+'<native><public>(c0:color, c1:color)<converges>:color
+            @editable
+            Y<native><public>:float = external {}
 
-    # Makes an ACES 2065-1 `color` from the component-wise difference of `c0` and `c1`.
-    operator'-'<native><public>(c0:color, c1:color)<converges>:color
+        # Makes a `vector2` by inverting the `SurfaceNormal` component of `Direction`.
+        # Fails if `not SurfaceNormal.MakeUnitVector[]`.
+        ReflectVector<native><public>(Direction:vector2, SurfaceNormal:vector2)<varies><decides>:vector2
 
-    # Makes an ACES 2065-1 `color` from the component-wise product of `c0` and `c1`.
-    operator'*'<native><public>(c0:color, c1:color)<converges>:color
+        # Returns the dot product of `V1` and `V2`.
+        DotProduct<native><public>(V1:vector2, V2:vector2)<varies>:float
 
-    # Makes an ACES 2065-1 `color` from each component of `c` scaled by `factor`.
-    operator'*'<native><public>(c:color, factor:float)<converges>:color
+        # Returns the Euclidean distance between `V1` and `V2`.
+        Distance<native><public>(V1:vector2, V2:vector2)<varies>:float
 
-    # Makes an ACES 2065-1 `color` from each component of `c` scaled by `factor`.
-    operator'*'<native><public>(c:color, factor:int)<converges>:color
+        # Returns the squared Euclidean distance between `V1` and `V2`.
+        DistanceSquared<native><public>(V1:vector2, V2:vector2)<varies>:float
 
-    # Makes an ACES 2065-1 `color` from each component of `c` scaled by `factor`.
-    operator'*'<native><public>(factor:float, c:color)<converges>:color
+        # Makes a unit length `vector3` pointing in the same direction of `V`.
+        # Fails if `V.IsAlmostZero[] or not V.IsFinite[]`.
+        (V:vector2).MakeUnitVector<native><public>()<varies><decides>:vector2
 
-    # Makes an ACES 2065-1 `color` from each component of `c` scaled by `factor`.
-    operator'*'<native><public>(factor:int, c:color)<converges>:color
+        # Returns the length of `V`.
+        (V:vector2).Length<public>()<varies>:float = external {}
 
-    # Makes an ACES 2065-1 `color` from each component of `c` divided by `factor`.
-    operator'/'<native><public>(c:color, factor:float)<computes><decides>:color
+        # Returns the squared length of `V`.
+        (V:vector2).LengthSquared<public>()<varies>:float = external {}
 
-    # Makes an ACES 2065-1 `color` from each component of `c` divided by `factor`.
-    operator'/'<native><public>(c:color, factor:int)<computes><decides>:color
+        # Used to linearly interpolate/extrapolate between `From` (when `Parameter = 0.0`)
+        # and `To` (when `Parameter = 1.0`). Expects that all arguments are finite.
+        # Returns `From*(1 - Parameter) + To*Parameter`.
+        Lerp<public>(From:vector2, To:vector2, Parameter:float)<varies>:vector2 = external {}
 
-    # Makes an ACES 2065-1 `color` from sRGB components `Red`, `Green`, and `Blue`.
-    # Normal sRGB component values are between `0.0` and `1.0`, but this can handle
-    # larger values.
-    MakeColorFromSRGB<native><public>(Red:float, Green:float, Blue:float)<converges>:color
+        # Makes a `string` representation of `V`.
+        ToString<native><public>(V:vector2)<varies>:[]char
 
-    # Makes an sRGB `tuple` by converting `InColor` from an ACES 2065-1 `color` to sRGB.
-    MakeSRGBFromColor<native><public>(InColor:color)<converges>:tuple(float, float, float)
+        # Makes a `vector2` by inverting the signs of `Operand`.
+        prefix'-'<public>(Operand:vector2)<computes>:vector2 = external {}
 
-    # Makes an ACES 2065-1 `color` from the integer sRGB components `Red`, `Green`, and `Blue`.
-    # Valid sRGB component values are between '0' and '255', inclusive.
-    MakeColorFromSRGBValues<native><public>(Red:int, Green:int, Blue:int)<converges>:color
+        # Makes a `vector2` by component-wise addition of `Left` and `Right`.
+        operator'+'<public>(Left:vector2, Right:vector2)<computes>:vector2 = external {}
 
-    # Makes an ACES 2065-1 `color` from a CSS-style sRGB `hexString`. Supported formats are:
-    #  * RGB
-    #  * RRGGBB
-    #  * RRGGBBAA
-    #  * #RGB
-    #  * #RRGGBB
-    #  * #RRGGBBAA
-    # An invalid hex string will return `Black`.
-    MakeColorFromHex<native><public>(hexString:[]char)<converges>:color
+        # Makes a `vector2` by component-wise subtraction of `Right` from `Left`.
+        operator'-'<public>(Left:vector2, Right:vector2)<computes>:vector2 = external {}
 
-    # Makes an ACES 2065-1 `color` from `Hue`, `Saturation`, and `Value` components.
-    # Components use the HSV color model in the sRGB color space. Expected ranges:
-    #  * `0.0 <= Hue <= 360.0`
-    #  * `0.0 <= Saturation <= 1.0`
-    #  * `0.0 <= Value <= 1.0`
-    # Values out of expected ranges will undergo range reduction and conversion.
-    MakeColorFromHSV<native><public>(Hue:float, Saturation:float, Value:float)<converges>:color
+        # Makes a `vector2` by component-wise multiplication of `Left` and `Right`.
+        operator'*'<public>(Left:vector2, Right:float)<computes>:vector2 = external {}
 
-    # Makes an HSV `tuple` by converting `InColor` from an ACES 2065-1 `color` to sRGB and applying the HSV color model.
-    MakeHSVFromColor<native><public>(InColor:color):tuple(float, float, float)
+        # Makes a `vector2` by multiplying the components of `Right` by `Left`.
+        operator'*'<public>(Left:float, Right:vector2)<computes>:vector2 = external {}
 
-    # Makes an ACES 2065-1 `color` from the chromaticty of a blackbody radiator at `Temperature` Kelvin.
-    # `Temperature` is clamped such that `0 <= Temperature`.
-    MakeColorFromTemperature<native><public>(Temperature:float)<converges>:color
+        # Makes a `vector2` by dividing the components of `Left` by `Right`.
+        operator'/'<public>(Left:vector2, Right:float)<computes>:vector2 = external {}
 
-    # Module import path: /Verse.org/Colors/NamedColors
-    # Color presets from CSS Color Module 3 Extended color keywords.
-    NamedColors<public> := module:
-        AliceBlue<public>:color = external {}
+        # Makes a `vector2` by component-wise division of `Left` by `Right`.
+        operator'/'<public>(Left:vector2, Right:vector2)<computes>:vector2 = external {}
 
-        AntiqueWhite<public>:color = external {}
+        # Makes a `vector2` by converting the components of `V` to `float`s.
+        ToVector2<public>(V:vector2i)<transacts>:vector2 = external {}
 
-        Aqua<public>:color = external {}
+        # Returns `V` if all components are finite.
+        # Fails if any of the components are not finite.
+        (V:vector2).IsFinite<public>()<computes><decides>:vector2 = external {}
 
-        Aquamarine<public>:color = external {}
+        # Succeeds when each component of `V` is within `AbsoluteTolerance` of `0.0`.
+        (V:vector2).IsAlmostZero<public>(AbsoluteTolerance:float)<computes><decides>:void = external {}
 
-        Azure<public>:color = external {}
+        # Succeeds when each component of `V1` and `V2` are within `AbsoluteTolerance` of each other.
+        IsAlmostEqual<public>(V1:vector2, V2:vector2, AbsoluteTolerance:float)<computes><decides>:void = external {}
 
-        Beige<public>:color = external {}
+        # 2-dimensional vector with `int` components.
+        vector2i<native><public> := struct<concrete><computes>:
+            @editable
+            X<native><public>:int = external {}
 
-        Bisque<public>:color = external {}
+            @editable
+            Y<native><public>:int = external {}
 
-        Black<public>:color = external {}
+        # Returns the dot product of `V1` and `V2`.
+        DotProduct<public>(V1:vector2i, V2:vector2i)<computes>:int = external {}
 
-        BlanchedAlmond<public>:color = external {}
+        # Makes a `vector2i` that is component-wise equal to `V1` and `V2`.
+        # Fails if any component of `V1` does not equal the corresponding component of `V2`.
+        Equals<public>(V1:vector2i, V2:vector2i)<computes><decides>:vector2i = external {}
 
-        Blue<public>:color = external {}
+        # Makes a `string` representation of `V`.
+        ToString<native><public>(V:vector2i)<computes>:[]char
 
-        BlueViolet<public>:color = external {}
+        # Makes a `vector2i` by component-wise truncation of `V` to `ints`s.
+        ToVector2i<public>(V:vector2)<varies><decides>:vector2i = external {}
 
-        Brown<public>:color = external {}
+        # Makes a `vector2i` by inverting the signs of `Operand`.
+        prefix'-'<public>(Operand:vector2i)<computes>:vector2i = external {}
 
-        Burlywood<public>:color = external {}
+        # Makes a `vector2i` by component-wise addition of `Left` and `Right`.
+        operator'+'<public>(Left:vector2i, Right:vector2i)<computes>:vector2i = external {}
 
-        CadetBlue<public>:color = external {}
+        # Makes a `vector2i` by component-wise subtraction of `Right` from `Left`.
+        operator'-'<public>(Left:vector2i, Right:vector2i)<computes>:vector2i = external {}
 
-        Chartreuse<public>:color = external {}
+        # Makes a `vector2i` by multiplying the components of `Left` by `Right`.
+        operator'*'<public>(Left:vector2i, Right:int)<computes>:vector2i = external {}
 
-        Chocolate<public>:color = external {}
+        # Makes a `vector2i` by multiplying the components of `Right` by `Left`.
+        operator'*'<public>(Left:int, Right:vector2i)<computes>:vector2i = external {}
 
-        Coral<public>:color = external {}
+        # 3-dimensional vector with `float` components.
+        vector3<native><public> := struct<concrete><computes>:
+            @editable
+            X<native><public>:float = external {}
 
-        CornflowerBlue<public>:color = external {}
+            @editable
+            Y<native><public>:float = external {}
 
-        Cornsilk<public>:color = external {}
+            @editable
+            Z<native><public>:float = external {}
 
-        Crimson<public>:color = external {}
+        # Makes a `vector3` by inverting the `SurfaceNormal` component of `Direction`.
+        # Fails if `not SurfaceNormal.MakeUnitVector[]`.
+        ReflectVector<native><public>(Direction:vector3, SurfaceNormal:vector3)<varies><decides>:vector3
 
-        Cyan<public>:color = external {}
+        # Returns the dot product of `V1` and `V2`.
+        DotProduct<native><public>(V1:vector3, V2:vector3)<varies>:float
 
-        DarkBlue<public>:color = external {}
+        # Returns the cross product of `V1` and `V2`.
+        CrossProduct<native><public>(V1:vector3, V2:vector3)<varies>:vector3
 
-        DarkCyan<public>:color = external {}
+        # Returns the Euclidean distance between `V1` and `V2`.
+        Distance<native><public>(V1:vector3, V2:vector3)<varies>:float
 
-        DarkGoldenrod<public>:color = external {}
+        # Returns the squared Euclidean distance between `V1` and `V2`.
+        DistanceSquared<native><public>(V1:vector3, V2:vector3)<varies>:float
 
-        DarkGray<public>:color = external {}
+        # Returns the 2-D Euclidean distance between `V1` and `V2` by ignoring the difference in `Z`.
+        DistanceXY<native><public>(V1:vector3, V2:vector3)<varies>:float
 
-        DarkGreen<public>:color = external {}
+        # Returns the squared 2-D Euclidean distance between `V1` and `V2` by ignoring their difference in `Z`.
+        DistanceSquaredXY<native><public>(V1:vector3, V2:vector3)<varies>:float
 
-        DarkGrey<public>:color = external {}
+        # Makes a unit length `vector3` pointing in the same direction of `V`.
+        # Fails if `V.IsAlmostZero[] or not V.IsFinite[]`.
+        (V:vector3).MakeUnitVector<native><public>()<varies><decides>:vector3
 
-        DarkKhaki<public>:color = external {}
+        # Makes a `string` representation of `V`.
+        ToString<native><public>(V:vector3)<varies>:[]char
 
-        DarkMagenta<public>:color = external {}
+        # Returns the length of `V`.
+        (V:vector3).Length<public>()<varies>:float = external {}
 
-        DarkOliveGreen<public>:color = external {}
+        # Returns the squared length of `V`.
+        (V:vector3).LengthSquared<public>()<computes>:float = external {}
 
-        DarkOrange<public>:color = external {}
+        # Returns the length of `V` as if `V.Z = 0.0`.
+        (V:vector3).LengthXY<public>()<varies>:float = external {}
 
-        DarkOrchid<public>:color = external {}
+        # Returns the squared length of `V` as if `V.Z = 0.0`.
+        (V:vector3).LengthSquaredXY<public>()<varies>:float = external {}
 
-        DarkRed<public>:color = external {}
+        # Used to linearly interpolate/extrapolate between `From` (when `Parameter = 0.0`)
+        # and `To` (when `Parameter = 1.0`). Expects that all arguments are finite.
+        # Returns `From*(1 - Parameter) + To*Parameter`.
+        Lerp<public>(From:vector3, To:vector3, Parameter:float)<varies>:vector3 = external {}
 
-        DarkSalmon<public>:color = external {}
+        # Makes a `vector3` by inverting the signs of `Operand`.
+        prefix'-'<public>(Operand:vector3)<computes>:vector3 = external {}
 
-        DarkSeaGreen<public>:color = external {}
+        # Makes a `vector3` by component-wise addition of `Left` and `Right`.
+        operator'+'<public>(Left:vector3, Right:vector3)<computes>:vector3 = external {}
 
-        DarkSlateBlue<public>:color = external {}
+        # Makes a `vector3` by component-wise subtraction of `Right` from `Left`.
+        operator'-'<public>(Left:vector3, Right:vector3)<computes>:vector3 = external {}
 
-        DarkSlateGray<public>:color = external {}
+        # Makes a `vector3` by component-wise multiplication of `Left` and `Right`.
+        operator'*'<public>(Left:vector3, Right:vector3)<computes>:vector3 = external {}
 
-        DarkSlateGrey<public>:color = external {}
+        # Makes a `vector3` by multiplying the components of `Left` by `Right`.
+        operator'*'<public>(Left:vector3, Right:float)<computes>:vector3 = external {}
 
-        DarkTurquoise<public>:color = external {}
+        # Makes a `vector3` by multiplying the components of `Right` by `Left`.
+        operator'*'<public>(Left:float, Right:vector3)<computes>:vector3 = external {}
 
-        DarkViolet<public>:color = external {}
+        # Makes a `vector3` by dividing the components of `Left` by `Right`.
+        operator'/'<public>(Left:vector3, Right:float)<computes>:vector3 = external {}
 
-        DeepPink<public>:color = external {}
+        # Makes a `vector3` by component-wise division of `Left` by `Right`.
+        operator'/'<public>(Left:vector3, Right:vector3)<computes>:vector3 = external {}
 
-        DeepSkyBlue<public>:color = external {}
+        # Returns `V` if all components are finite.
+        # Fails if any of the components are not finite.
+        (V:vector3).IsFinite<public>()<computes><decides>:vector3 = external {}
 
-        DimGray<public>:color = external {}
+        # Succeeds when each component of `V` is within `AbsoluteTolerance` of `0.0`.
+        (V:vector3).IsAlmostZero<public>(AbsoluteTolerance:float)<computes><decides>:void = external {}
 
-        DimGrey<public>:color = external {}
+        # Succeeds when each component of `V1` and `V2` are within `AbsoluteTolerance` of each other.
+        IsAlmostEqual<public>(V1:vector3, V2:vector3, AbsoluteTolerance:float)<computes><decides>:void = external {}
 
-        DodgerBlue<public>:color = external {}
+    # Module import path: /UnrealEngine.com/Temporary/Diagnostics
+    Diagnostics<public> := module:
+        # log levels available for various log commands
+        log_level<native><public> := enum:
+            Debug
+            Verbose
+            Normal
+            Warning
+            Error
 
-        Firebrick<public>:color = external {}
+        # log_channel is the base class used to define log channels. When printing a message to a log, the log channel class name will be prefixed to the output message.
+        log_channel<native><public> := class<abstract>:
 
-        FloralWhite<public>:color = external {}
+        # log class to send messages to the default log
+        log<native><public> := class:
+            # Channel class name will be added as a prefix used when printing the message e.g. '[log_channel]: #Message
+            Channel<native><public>:subtype(log_channel)
 
-        ForestGreen<public>:color = external {}
+            # Sets the default log level of the displayed message. See log_level enum for more info on log levels. Defaults to log_level.Normal.
+            DefaultLevel<native><public>:log_level = external {}
 
-        Fuchsia<public>:color = external {}
+            # Print message using the given log level
+            (log:)Print<native><public>(Message:[]char, ?Level:log_level = external {})<computes>:void
 
-        Gainsboro<public>:color = external {}
+            # Prints current script call stack using the give log level
+            PrintCallStack<native><public>(?Level:log_level = external {})<computes>:void
 
-        GhostWhite<public>:color = external {}
-
-        Gold<public>:color = external {}
-
-        Goldenrod<public>:color = external {}
-
-        Gray<public>:color = external {}
-
-        Green<public>:color = external {}
-
-        GreenYellow<public>:color = external {}
-
-        Grey<public>:color = external {}
-
-        Honeydew<public>:color = external {}
-
-        Hotpink<public>:color = external {}
-
-        IndianRed<public>:color = external {}
-
-        Indigo<public>:color = external {}
-
-        Ivory<public>:color = external {}
-
-        Khaki<public>:color = external {}
-
-        Lavender<public>:color = external {}
-
-        LavenderBlush<public>:color = external {}
-
-        LawnGreen<public>:color = external {}
-
-        LemonChiffon<public>:color = external {}
-
-        LightBlue<public>:color = external {}
-
-        LightCoral<public>:color = external {}
-
-        LightCyan<public>:color = external {}
-
-        LightGoldenrodYellow<public>:color = external {}
-
-        LightGray<public>:color = external {}
-
-        LightGreen<public>:color = external {}
-
-        LightGrey<public>:color = external {}
-
-        LightPink<public>:color = external {}
-
-        LightSalmon<public>:color = external {}
-
-        LightSeaGreen<public>:color = external {}
-
-        LightSkyBlue<public>:color = external {}
-
-        LightSlateGray<public>:color = external {}
-
-        LightSlateGrey<public>:color = external {}
-
-        LightSteelBlue<public>:color = external {}
-
-        LightYellow<public>:color = external {}
-
-        Lime<public>:color = external {}
-
-        LimeGreen<public>:color = external {}
-
-        Linen<public>:color = external {}
-
-        Magenta<public>:color = external {}
-
-        Maroon<public>:color = external {}
-
-        MediumAquamarine<public>:color = external {}
-
-        MediumBlue<public>:color = external {}
-
-        MediumOrchid<public>:color = external {}
-
-        MediumPurple<public>:color = external {}
-
-        MediumSeaGreen<public>:color = external {}
-
-        MediumSlateBlue<public>:color = external {}
-
-        MediumSpringGreen<public>:color = external {}
-
-        MediumTurquoise<public>:color = external {}
-
-        MediumVioletRed<public>:color = external {}
-
-        MidnightBlue<public>:color = external {}
-
-        MintCream<public>:color = external {}
-
-        MistyRose<public>:color = external {}
-
-        Moccasin<public>:color = external {}
-
-        NavajoWhite<public>:color = external {}
-
-        Navy<public>:color = external {}
-
-        OldLace<public>:color = external {}
-
-        Olive<public>:color = external {}
-
-        OliveDrab<public>:color = external {}
-
-        Orange<public>:color = external {}
-
-        OrangeRed<public>:color = external {}
-
-        Orchid<public>:color = external {}
-
-        PaleGoldenrod<public>:color = external {}
-
-        PaleGreen<public>:color = external {}
-
-        PaleTurquoise<public>:color = external {}
-
-        PaleVioletred<public>:color = external {}
-
-        PapayaWhip<public>:color = external {}
-
-        PeachPuff<public>:color = external {}
-
-        Peru<public>:color = external {}
-
-        Pink<public>:color = external {}
-
-        Plum<public>:color = external {}
-
-        PowderBlue<public>:color = external {}
-
-        Purple<public>:color = external {}
-
-        Red<public>:color = external {}
-
-        RosyBrown<public>:color = external {}
-
-        RoyalBlue<public>:color = external {}
-
-        SaddleBrown<public>:color = external {}
-
-        Salmon<public>:color = external {}
-
-        SandyBrown<public>:color = external {}
-
-        SeaGreen<public>:color = external {}
-
-        SeaShell<public>:color = external {}
-
-        Sienna<public>:color = external {}
-
-        Silver<public>:color = external {}
-
-        SkyBlue<public>:color = external {}
-
-        SlateBlue<public>:color = external {}
-
-        SlateGray<public>:color = external {}
-
-        SlateGrey<public>:color = external {}
-
-        Snow<public>:color = external {}
-
-        SpringGreen<public>:color = external {}
-
-        SteelBlue<public>:color = external {}
-
-        (NamedColors:)Tan<public>:color = external {}
-
-        Teal<public>:color = external {}
-
-        Thistle<public>:color = external {}
-
-        Tomato<public>:color = external {}
-
-        Turquoise<public>:color = external {}
-
-        Violet<public>:color = external {}
-
-        Wheat<public>:color = external {}
-
-        White<public>:color = external {}
-
-        WhiteSmoke<public>:color = external {}
-
-        Yellow<public>:color = external {}
-
-        YellowGreen<public>:color = external {}
-
-# Module import path: /Verse.org/Native
-Native<public> := module:
-    @attribscope_class
-    @attribscope_struct
-    import_as_attribute<epic_internal> := class(attribute):
-
-    import_as<epic_internal>(importName:[]char)<computes>:import_as_attribute
-
-# Module import path: /Verse.org/Concurrency
-Concurrency<public> := module:
-    # A parametric interface implemented by events with a `payload` that can be waited on. Matched with `signalable.`
-    awaitable<public>(payload:type)<computes> := interface:
-        # Suspends the current task until resumed by a matching call to `signalable.Signal`. Returns the event `payload`.
-        Await<public>()<suspends>:payload
-
-    awaitable<public>()<computes> := awaitable(void)
-
-    task<native><public>(t:type)<computes> := class<abstract><final>(awaitable(t)):
-        Await<native><override>()<suspends>:t
+    # Module import path: /UnrealEngine.com/Temporary/Curves
+    Curves<public> := module:
+        editable_curve<native><public> := class<final>:
+            # Evaluates this float curve at the specified time and returns the result as a float
+            Evaluate<native><public>(Time:float):float
